@@ -1,0 +1,18 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "https://campus.untrefvirtual.edu.ar/soap/?wsdl=true"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "messageContract": true,
+    "namespaceMappings": [
+      "*, U3FEduServices"
+    ],
+    "sync": true,
+    "targetFramework": "net6.0",
+    "typeReuseMode": "All"
+  }
+}

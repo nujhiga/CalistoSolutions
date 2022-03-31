@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CalistoDbCore\CalistoDbCore.csproj" />
+    <ProjectReference Include="..\CalistoEdCore\CalistoEdCore.csproj" />
+    <ProjectReference Include="..\CalistoStandars\CalistoStandars.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Extensions\" />
+    <Folder Include="Services\Factories\" />
+    <Folder Include="Services\Serializers\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+    <aula:registrar_usuario>
+        <aula:usuario>
+           <aula:administrador_usuario>false</aula:administrador_usuario>
+           <aula:id_usuario>f_manes</aula:id_usuario>
+           <aula:nombre>facundo</aula:nombre>
+           <aula:apellido>manes</aula:apellido>
+           <aula:clave>asdasd</aula:clave>
+           <aula:id_idioma>1</aula:id_idioma>
+           <aula:codigo_postal>2000</aula:codigo_postal>
+           <aula:dato_adicional_1>32910834</aula:dato_adicional_1>
+           <aula:dato_adicional_2></aula:dato_adicional_2>
+           <aula:dato_adicional_3></aula:dato_adicional_3>
+           <aula:direccion>lisboa 277</aula:direccion>
+           <aula:email>f_manes@hotmail.com</aula:email>
+           <aula:localidad>Rosario</aula:localidad>
+           <aula:telefono>156203654</aula:telefono>
+           <aula:url>http://fmanes.com</aula:url>
+           <aula:foto_nombre>lisa.jpg</aula:foto_nombre>
+           <aula:foto_base64>data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAkGBwgHBgkICAgKCgkLDhcPDg0NDhwUFREXIh4jIyEeI....</aula:foto_base64>
+        </aula:usuario>
+        <aula:usuario_grupo>
+           <aula:administrador_grupo>true</aula:administrador_grupo>
+           <aula:estado>1</aula:estado>
+           <aula:id_grupo>42</aula:id_grupo>
+           <aula:perfil>I</aula:perfil>
+        </aula:usuario_grupo>
+     </aula:registrar_usuario>
