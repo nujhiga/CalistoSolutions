@@ -1,0 +1,75 @@
+﻿namespace CalistoDbCore.U3FEntities
+{
+    public partial class Parametro
+    {
+        public string? UltActa { get; set; }
+        public int? UltLibro { get; set; }
+        public int? UltFolio { get; set; }
+        public int? MaxComis { get; set; }
+        public int? IxeFincanti { get; set; }
+        public DateTime? IxeFindesde { get; set; }
+        public DateTime? IxeFinhasta { get; set; }
+        public string? RegAno { get; set; }
+        public string? RegCua { get; set; }
+        public string? InsAno { get; set; }
+        public string? InsCua { get; set; }
+        public string? BcoAno { get; set; }
+        public string? BcoCua { get; set; }
+        public DateTime? RegDesde { get; set; }
+        public DateTime? RegHasta { get; set; }
+        public DateTime? InsDesde { get; set; }
+        public DateTime? InsHasta { get; set; }
+        public int? LegUlt { get; set; }
+        public int? CerReg { get; set; }
+        public int? CertNro { get; set; }
+        public int? CertLibro { get; set; }
+        public int? CertFolio { get; set; }
+        public int? CertTope { get; set; }
+        public int? CertUso { get; set; }
+        public int? CertNroPos { get; set; }
+        public int? CertLibroPos { get; set; }
+        public int? CertFolioPos { get; set; }
+        public int? CertTopePos { get; set; }
+        public int? CuoIns { get; set; }
+        public int? TesLibro { get; set; }
+        public int? TesFolio { get; set; }
+        public int Id { get; set; }
+        public string? UltRecibo { get; set; }
+        public string? HisRecibo { get; set; }
+        public int? UltNota { get; set; }
+        public string? AnoNota { get; set; }
+        public string? EncAct { get; set; }
+        public string? Verano { get; set; }
+        public int? TinNro { get; set; }
+        public string? TinAno { get; set; }
+        public int? RecFolio { get; set; }
+        public int? RecLibro { get; set; }
+        public string? Abandono { get; set; }
+        public string? EncExt { get; set; }
+        public string? Espera { get; set; }
+        public string? Habilitados { get; set; }
+        public int? Solbeca { get; set; }
+        public string? Taller { get; set; }
+        public string? WebAna { get; set; }
+        public string? WebCom { get; set; }
+        public string? WebEnc { get; set; }
+        public string? WebExa { get; set; }
+        public string? WebMat { get; set; }
+        public string? WebPre { get; set; }
+        public int? LegUltMaraton { get; set; }
+        public double? Cotizacion { get; set; }
+        public DateTime? Cotifecha { get; set; }
+        public int? LegUltCongreso { get; set; }
+        public int? LegUltCongreso2 { get; set; }
+        public DateTime? Fexadesde { get; set; }
+        public DateTime? Fexahasta { get; set; }
+        public string? WebExaUlp { get; set; }
+        public string? WebMatUlp { get; set; }
+        public DateTime? FexadesdeUlp { get; set; }
+        public DateTime? FexahastaUlp { get; set; }
+        public string? RegAnoUlp { get; set; }
+        public string? RegCuaUlp { get; set; }
+        public DateTime? FecexaUlp { get; set; }
+        public string? TurexaUlp { get; set; }
+    }
+}

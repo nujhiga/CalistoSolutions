@@ -3,6 +3,7 @@ global using CalistoStandars.Definitions.Extensions;
 global using CalistoStandars.Definitions.Models;
 global using CalistoStandars.Definitions.Structures;
 global using CalistoStandars.Definitions.Interfaces;
+global using System.Linq;
 
 
 

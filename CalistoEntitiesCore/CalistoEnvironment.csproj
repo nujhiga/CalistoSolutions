@@ -13,10 +13,4 @@
     <ProjectReference Include="..\CalistoStandars\CalistoStandars.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Extensions\" />
-    <Folder Include="Services\Factories\" />
-    <Folder Include="Services\Serializers\" />
-  </ItemGroup>
-
 </Project>

@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
+
 using CalistoStandars.Definitions.Enumerations;
 using CalistoStandars.Definitions.Extensions;
 using CalistoStandars.Definitions.Interfaces;
 using CalistoStandars.Definitions.Models;
-using CalistoStandars.Definitions.Structures;
 
 namespace CalistoEdCore.Services.Factories;
 

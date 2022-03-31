@@ -1,7 +1,7 @@
-﻿namespace CalistoStandars.Definitions.Models;
+﻿//namespace CalistoStandars.Definitions.Models;
 
-public abstract class Serializable : ISerializable
-{
-    public ClResult? Result { get; set; }
-    public IException? Exception { get; set; }
-}
+//public abstract class Serializable : ISerializable
+//{
+//    public ClResult? Result { get; set; }
+//    public IException? Exception { get; set; }
+////}

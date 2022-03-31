@@ -1,9 +1,4 @@
-﻿using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Xml;
-
-namespace CalistoStandars.Definitions.Interfaces;
+﻿namespace CalistoStandars.Definitions.Interfaces;
 
 public interface IMessage : IElement<MessageSign> //where T : Enum
 {

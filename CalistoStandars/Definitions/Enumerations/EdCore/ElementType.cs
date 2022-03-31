@@ -3,6 +3,7 @@
 public enum ElementType
 {
     None,
+    Serializable,
     MethodInfo,
     DefaultInfo,
     Member,

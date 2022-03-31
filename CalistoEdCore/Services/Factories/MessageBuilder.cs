@@ -3,7 +3,6 @@ using System.Net;
 using CalistoStandars.Definitions.Interfaces;
 using CalistoStandars.Definitions.Enumerations;
 using CalistoStandars.Definitions.Extensions;
-using CalistoStandars.Definitions.Structures;
 
 namespace CalistoEdCore.Services.Factories;
 

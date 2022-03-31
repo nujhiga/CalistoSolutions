@@ -1,9 +1,12 @@
-﻿namespace CalistoStandars.Definitions.Interfaces;
+﻿using CalistoStandars.Definitions.Interfaces.DbCore.Persons;
 
-public interface IPerson : IEquatable<IPerson>, IReferenceable, ISerializable
+namespace CalistoStandars.Definitions.Interfaces;
+
+[ElementAttr(ElementType.Serializable)]
+public interface IPerson : IPersonBase
 {
     [MemberAttr(MemberSign.dato_adicional_1)]
-    double? Document { get; set; }
+    int? Document { get; set; }
 
 
     [MemberAttr(MemberSign.dato_adicional_2)]
@@ -36,22 +39,4 @@ public interface IPerson : IEquatable<IPerson>, IReferenceable, ISerializable
 
     [MemberAttr(MemberSign.localidad)] 
     string? Location { get; set; }
-
-
-    [MemberAttr(MemberSign.id_usuario, isNullable: false)] 
-    object? UserID { get; set; }
-
-
-    [MemberAttr(MemberSign.clave, isNullable: false)] 
-    string? Password { get; set; }
-
-
-    [MemberAttr(MemberSign.administrador_usuario, defaultValue: 0)]
-    bool? IsWebmasterAdmin { get; set; }
-
-   
-    [NodeAttr(NodeSign.usuario_grupo)] 
-    IEnumerable<IUserGroup> UserGroups { get; set; }
-
-    //IUserGroup[]? UserGroups { get; set; }
 }

@@ -1,7 +1,6 @@
 ﻿namespace CalistoStandars.Definitions.Interfaces;
 
-public interface IReferenceable
+public interface IReferenceable : IEquatable<KeyReference?>
 {
     KeyReference? Reference { get; set; }
-    //public void SetReference(params IConvertible[]? values);
 }

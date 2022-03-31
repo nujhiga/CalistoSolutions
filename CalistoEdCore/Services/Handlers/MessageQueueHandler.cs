@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Net;
-using System.Reflection.PortableExecutable;
-using System.Security.Policy;
-using System.Text;
+﻿using System.Collections.Concurrent;
 
-using CalistoEdCore.Services.Factories;
 using CalistoEdCore.Services.Handlers;
 
 using CalistoStandars.Definitions.Enumerations;
 using CalistoStandars.Definitions.Interfaces;
-using CalistoStandars.Definitions.Models;
-using CalistoStandars.Definitions.Structures;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalistoEdCore.Services.Messages;
 
@@ -25,11 +15,6 @@ public sealed class MessageQueueHandler : MessageHandler, IDisposable
     private readonly ConcurrentQueue<IRequest> _pendingRequests;
     private readonly ConcurrentQueue<IResponse> _pendingResponses;
     
-    //public MessageQueueHandler(in HttpClient wClient) : base(in wClient)
-    //{
-    //    _pendingRequests = new ConcurrentQueue<IRequest>();
-    //    _pendingResponses = new ConcurrentQueue<IResponse>();
-    //}
     public MessageQueueHandler(in HttpClient wClient, ref (Action addCallback, Func<int> getCallback) callBacks) : base(in wClient, ref callBacks)
     {
         _pendingRequests = new ConcurrentQueue<IRequest>();
@@ -41,9 +26,7 @@ public sealed class MessageQueueHandler : MessageHandler, IDisposable
         IRequest request = MBuilder.GetMessage<IRequest>(in sign, in source);
 
         if (request.IsInvalid) return false;
-
-       // AddMessageCountCallback();
-
+        
         _pendingRequests.Enqueue(request);
 
         return true;
@@ -63,8 +46,6 @@ public sealed class MessageQueueHandler : MessageHandler, IDisposable
             IRequest request = MBuilder.GetMessage<IRequest>(in sign, in source);
 
             if (request.IsInvalid) return false;
-
-          //  AddMessageCountCallback();
             
             validCount++;
             _pendingRequests.Enqueue(request);

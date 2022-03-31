@@ -1,7 +1,7 @@
-﻿namespace CalistoStandars.Definitions.Interfaces;
+﻿//namespace CalistoStandars.Definitions.Interfaces;
 
-public interface ISerializable
-{
-    ClResult? Result { get; set; }
-    IException? Exception { get; set; }
-}
+//public interface ISerializable
+//{
+//    ClResult? Result { get; set; }
+//    IException? Exception { get; set; }
+//}
