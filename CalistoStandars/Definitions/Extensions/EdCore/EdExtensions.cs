@@ -8,6 +8,7 @@ public static class MessagesExtensions
         messageSign is MessageSign.asignar_usuarios_grupos or MessageSign.desactivar_usuarios
             or MessageSign.eliminar_usuarios_grupos or MessageSign.registrar_usuarios;
 
+
     public static void SetMemberValue(this IMember member, in object source)
     {
         if (member is null) return;
@@ -46,30 +47,8 @@ public static class MessagesExtensions
         return value;
     }
 
-    public static Type GetInterfaceType(this object? source)
-    {
-        Type baseType = source!.GetType();
 
-        if (baseType.IsInterface) return baseType;
 
-        string interfaceName = $"I{baseType.Name}";
-
-        Type interfaceType = baseType.GetInterface(interfaceName)!;
-
-        return interfaceType;
-    }
-
-    public static IEnumerable<PropertyInfo> GetInterfaceProperties<TAttr>(this object? source) where TAttr : Attribute
-    {
-        /*Type baseType = source!.GetType();
-        if (baseType.IsInterface) return null!;
-        string interfaceName = $"I{baseType.Name}";        
-        Type interfaceType = baseType.GetInterface(interfaceName)!;*/
-
-        Type interType = source.GetInterfaceType();
-
-        return interType is null ? null! : interType.GetProperties().Where(p => Attribute.IsDefined(p, typeof(TAttr)))!;
-    }
 
     private static MemberAttr GetMemberAttribute<TSign>(this object source, TSign sign) where TSign : Enum
     {

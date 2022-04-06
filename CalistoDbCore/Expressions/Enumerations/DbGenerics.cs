@@ -4,7 +4,7 @@ public enum DbGenerics
 {
     None,
     ConvCod,
-    CarreraId_,
+    CarreraId,
     Legajo,
 }
 

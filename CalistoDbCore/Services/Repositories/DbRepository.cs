@@ -1,76 +1,156 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using CalistoDbCore.Expressions.Builders;
-using CalistoDbCore.Expressions.BuildingOptions.Factory;
-using CalistoDbCore.Expressions.BuildingOptions;
+
 using CalistoDbCore.Expressions.Enumerations;
 using CalistoDbCore.Services.Factories;
 using CalistoDbCore.U3FEntities;
+
+using CalistoStandars.Definitions.Enumerations;
+using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 using CalistoStandars.Definitions.Models;
 using CalistoStandars.Definitions.Structures;
+using CalistoStandars.Definitions.Models.DbCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalistoDbCore.Services.Repositories;
 
-public enum RequestAction
+public enum DbRequestSign
 {
     None,
-    SyncCareerStudents,
-
+    GetPersons,
+    GetStudents,
+    GetTeachers,
+    GetCareers,
+    GetCareerPlans,
+    GetAssignatures,
+    GetCommissions,
+    GetStudentsSync,
+    GetSyncCareers,
+    GetSyncCommissions,
+    GetSyncExamns
 }
 
-
-
-public sealed class DbRepository : ConcurrentDictionary<RequestAction, IEnumerable<IEntity>>
+public static class DbRequestParameterExtensions
 {
-    public CampusTarget? UsingCampus { get; set; }
-    public Period[] UsingPeriods { get; set; }
-    public int?[] UsingCareers { get; set; }
-    public int?[] UsingCommissions { get; set; }
-    public double[] UsingUsers { get; set; }
-    public DbRegularity UsingRegularity { get; set; }
+    public static DbRequestParameter<TSign> With<TSign>(this DbRequestParameter<TSign> requestParam, TSign value) where TSign : Enum
+    {
+        requestParam.RequestSign = value;
+        return requestParam;
 
+    }
+    public static DbRequestParameter<DbRequestSign> With<TValue>(this DbRequestParameter<DbRequestSign> requestParam, object value)
+    {
+        if (typeof(TValue) == typeof(IEntity))
+        {
+            requestParam.Source = value;
+            return requestParam;
+        }
+
+        if (typeof(TValue) == typeof(DbRegularity))
+        {
+            requestParam.WithRegularity = (DbRegularity)value;
+            return requestParam;
+        }
+
+        if (typeof(TValue) == typeof(ClCampus))
+        {
+            requestParam.FromCampus = (ClCampus)value;
+            return requestParam;
+        }
+
+        if (typeof(TValue) == typeof(int?[]))
+        {
+            requestParam.WithAcademicID = (int?[])value;
+            return requestParam;
+        }
+
+        if (typeof(TValue) == typeof(double[]))
+        {
+            requestParam.WithUsers = (double[])value!;
+            return requestParam;
+        }
+
+        if (typeof(TValue) == typeof(Period[]))
+        {
+            requestParam.OnPeriods = (Period[])value!;
+            return requestParam;
+        }
+
+        if (typeof(TValue) == typeof(EntityMemberSign[]))
+        {
+            requestParam.SelectionSigns = (EntityMemberSign[])value!;
+            return requestParam;
+        }
+
+        return requestParam;
+    }
+}
+
+public sealed record DbRequestParameter<TSign> : IDisposable
+{
+    public TSign? RequestSign { get; set; }
+    public ClCampus? FromCampus { get; set; }
+    public DbRegularity? WithRegularity { get; set; }
+    public int?[]? WithAcademicID { get; set; }
+    public double[]? WithUsers { get; set; }
+    public Period[]? OnPeriods { get; set; }
+    public object? Source { get; set; }
+    public EntityMemberSign[]? SelectionSigns { get; set; }
+
+    public DbRequestParameter(in TSign sign, in ClCampus fromCampus, ref Period[] onPeriods)
+    {
+        FromCampus = fromCampus;
+        OnPeriods = onPeriods;
+        RequestSign = sign;
+    }
+
+    public void Dispose()
+    {
+
+        if (WithAcademicID is { })
+            Array.Clear(WithAcademicID, 0, WithAcademicID.Length);
+
+        if (WithUsers is { })
+            Array.Clear(WithUsers, 0, WithUsers.Length);
+
+        if (OnPeriods is { })
+            Array.Clear(OnPeriods, 0, OnPeriods.Length);
+
+        if (SelectionSigns is { })
+            Array.Clear(SelectionSigns, 0, SelectionSigns.Length);
+
+    }
+}
+
+public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerable<IEntity>>
+{
     public bool Working { get; private set; }
     public CancellationToken Cancellation { get; }
 
-    private readonly CacheHandler<RequestAction> _cacheControl;
+    private readonly CacheHandler<DbRequestSign> _cacheControl;
 
-    private readonly DbRequestFactory _dbRequestFactory;
+    public DbRequestParameter<DbRequestSign> RequestParam { get; set; }
 
-    //public IEnumerable<IEntity> LastResults { get; private set; }
-    //public void DisposeLastResults() => LastResults = Enumerable.Empty<IEntity>();
-
-    public DbRepository(CampusTarget campus, Period[] periodses)
+    public DbRepository(CampusTarget campus, Period[] periods)
     {
-        UsingCampus = campus;
-        UsingPeriods = periodses;
-
-        UsingCareers = null!;
-        UsingCommissions = null!;
-        UsingUsers = null!;
-
         Cancellation = new CancellationToken();
+        _cacheControl = new CacheHandler<DbRequestSign>(CleanCacheRequest);
 
-        _cacheControl = new CacheHandler<RequestAction>(CleanCacheRequest);
-        _dbRequestFactory = new DbRequestFactory(this);
+        RequestParam = new DbRequestParameter<DbRequestSign>(DbRequestSign.GetSyncCareers, campus.Source, ref periods);
+
     }
 
+    
 
-    private void CleanCacheRequest(RequestAction rtype)
+    private void CleanCacheRequest(DbRequestSign rtype)
     {
-        TryRemove(rtype, out IEnumerable<IEntity> entities);
-        entities = Enumerable.Empty<IEntity>();
+        //TryRemove(rtype, out IEnumerable<TEntity> entities);
+        //entities = Enumerable.Empty<TEntity>();
     }
 
-    public async Task<bool> ExecuteRequestAsync(RequestAction requestType, SelectionDepth selectionDepth,
+    public async Task<bool> ExecuteRequestAsync(DbRequestSign dataRequestType, SelectionDepth selectionDepth,
          ExecutionOptions executionOptions, bool disposeParams = true)
     {
         if (Working) return false;
@@ -79,27 +159,33 @@ public sealed class DbRepository : ConcurrentDictionary<RequestAction, IEnumerab
 
         await using U3FContext ctx = new();
 
-        //IQueryable<IEntity> requestingEntities = _dbRequestFactory.
-        //    GetRequest(in ctx, in requestType, in selectionDepth);
+        INominalEntity person = new NominalEntity();
         {}
-       // if (requestingEntities is null) return false;
+        RequestParam = RequestParam.With<IEntity>(person).With<DbRegularity>(DbRegularity.Regular).With<EntityMemberSign[]>(new[] { EntityMemberSign.Nombres, EntityMemberSign.Documento });
 
-      // IEnumerable<IEntity> results = _dbRequestFactory.GetSyncCareerStudents2(in ctx, selectionDepth);
-       IEnumerable<object> results = _dbRequestFactory.GetSyncCareerStudents2(in ctx, selectionDepth);
+        {}
+     //   var res = DbRequestFactory.GetEntities2(in ctx, RequestParam);
+        //IQueryable<IEntity> requestingEntities = _dbRequestFactory.
+        //    GetRequest(in ctx, in dataRequestType, in selectionDepth);
+        { }
+        // if (requestingEntities is null) return false;
+
+        // IEnumerable<IEntity> results = _dbRequestFactory.GetSyncCareerStudents2(in ctx, selectionDepth);
+        //IEnumerable<TEntity> results = _dbRequestFactory.GetSyncCareerStudents2(in ctx, selectionDepth);
 
 
         //requestingEntities.ToListAsync(Cancellation);
         { }
-      
-       // if (executionOptions.CacheResults)
-      //      SetCache(requestType, in results, ref executionOptions);
 
-        if (disposeParams) DisposeParams();
+        // if (executionOptions.CacheResults)
+        //      SetCache(dataRequestType, in results, ref executionOptions);
+
+        if (disposeParams) RequestParam.Dispose();
 
         Working = false;
 
-        {}
-        return results.Any();
+        { }
+        return false; //results.Any();
     }
 
     private async Task ForceCtxDispose(DbContext ctx)
@@ -113,36 +199,23 @@ public sealed class DbRepository : ConcurrentDictionary<RequestAction, IEnumerab
             await ctx.DisposeAsync();
         }
     }
-
-    private void SetCache(in RequestAction requestType, in IEnumerable<IEntity> entities, ref ExecutionOptions options)
+    /*
+    private void SetCache(in DataRequestSign dataRequestType, in IEnumerable<TEntity> entities, ref ExecutionOptions options)
     {
-        TryAdd(requestType, entities);
+        TryAdd(dataRequestType, entities);
 
         if (options.CacheLifeTime is { } lifeTime)
-            _cacheControl.AddStart(requestType, lifeTime);
-    }
+            _cacheControl.AddStart(dataRequestType, lifeTime);
+    }*/
 
-    private void DisposeParams()
-    {
-        if (UsingPeriods is { })
-            Array.Clear(UsingPeriods, 0, UsingPeriods.Length);
 
-        if (UsingCareers is { })
-            Array.Clear(UsingCareers, 0, UsingCareers.Length);
-
-        if (UsingCommissions is { })
-            Array.Clear(UsingCommissions, 0, UsingCommissions.Length);
-
-        if (UsingUsers is { })
-            Array.Clear(UsingUsers, 0, UsingUsers.Length);
-    }
 
     /*
     private async Task<IEnumerable<VisAlu>> RequestCareersStudentsSync()
     {
         await using U3FContext ctx = new U3FContext();
 
-        using BuilderOptions options = BuilderOptionsFactory.GetCareerStudentsSync(this);
+        using BuilderOptions options = BuilderOptionFactory.GetCareerStudentsSync(this);
 
         StudentsQueries query = new StudentsQueries(options);
 

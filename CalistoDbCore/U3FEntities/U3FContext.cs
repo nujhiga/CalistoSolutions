@@ -1,7 +1,82 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CalistoStandars.Definitions.Enumerations.DbCore;
+using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
+using CalistoStandars.Definitions.Models.DbCore.Attributes;
+using CalistoStandars.Definitions.Models.DbCore.Entities.Constants;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace CalistoDbCore.U3FEntities
 {
+    public interface INominalEntity : IEntity
+    {
+        [EntityAttr(EntityMemberSign.Legajo)]
+        int Legajo { get; set; }
+
+
+        [EntityAttr(EntityMemberSign.Apellido)]
+        string? Apellido { get; set; }
+
+
+        [EntityAttr(EntityMemberSign.Nombres)]
+        string? Nombres { get; set; }
+
+
+        [EntityAttr(EntityMemberSign.Documento)]
+        int? Documento { get; set; }
+
+
+        [EntityAttr(EntityMemberSign.FecNac)]
+        DateTime? FecNac { get; set; }
+
+
+        [EntityAttr(EntityMemberSign.Mail)]
+        string? Mail { get; set; }
+
+
+        [EntityAttr(EntityMemberSign.SexoId)]
+        char? SexoId { get; set; }
+
+        int Id { get; set; }
+
+    }
+
+    public class NominalEntity : INominalEntity
+    {
+        public object EntityID => Legajo;
+        public string MyView => EntitiesConstants.Nominals.VisAlu;
+        public int Legajo { get; set; }
+        public string? Apellido { get; set; }
+        public string? Nombres { get; set; }
+        public int? Documento { get; set; }
+        public DateTime? FecNac { get; set; }
+        public string? Mail { get; set; }
+        public char? SexoId { get; set; }
+        public int Id { get; set; }
+    }
+
+    public abstract class U3FDbContext : DbContext
+    {
+        protected U3FDbContext() { }
+        protected U3FDbContext(DbContextOptions<U3FDbContext> options) : base(options) { }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+        {
+            if (!optionsBuilder.IsConfigured) 
+            { 
+                optionsBuilder.UseSqlServer(@"Data Source=172.16.2.2;
+                                              Initial Catalog=U3FVirtual;
+                                              User ID=migrauser; 
+                                              Password = JoaquinMigra;");
+            }
+        }
+    }
+
+    public sealed class AcademicEntityContext : U3FDbContext
+    {
+        public DbSet<NominalEntity> NominalEntities { get; set; } = null!;
+
+    }
+
+
     public partial class U3FContext : DbContext
     {
         public U3FContext()
@@ -12,7 +87,18 @@ namespace CalistoDbCore.U3FEntities
             : base(options)
         {
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the FieldName= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=172.16.2.2; Initial Catalog=U3FVirtual; User ID=migrauser; Password = JoaquinMigra;");
+            }
+        }
 
+        #region DbSets
+
+        public virtual DbSet<PersonaBase> Personas { get; set; } = null!;
         public virtual DbSet<Calendario> Calendarios { get; set; } = null!;
         public virtual DbSet<Carmating> Carmatings { get; set; } = null!;
         public virtual DbSet<Carmatingulp> Carmatingulps { get; set; } = null!;
@@ -95,19 +181,362 @@ namespace CalistoDbCore.U3FEntities
         public virtual DbSet<VisWeb> VisWebs { get; set; } = null!;
         public virtual DbSet<WebAprobaronCiclo> WebAprobaronCiclos { get; set; } = null!;
         public virtual DbSet<WebCubo01> WebCubo01s { get; set; } = null!;
+        #endregion
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+
+
+
+
+
+        private static void OnPersonaBaseCreating(ModelBuilder modelBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
+            modelBuilder.Entity<NominalEntity>(entity =>
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=172.16.2.2; Initial Catalog=U3FVirtual; User ID=migrauser; Password = JoaquinMigra;");
-            }
+                entity.HasNoKey();
+
+
+
+                entity.ToView(EntitiesConstants.Nominals.VisAlu);
+
+                entity.Property(e => e.Nombres).HasMaxLength(EntitiesConstants.MaxLength.Fifty);
+
+                entity.Property(e => e.Apellido).HasMaxLength(EntitiesConstants.MaxLength.Forty);
+
+                entity.Property(e => e.SexoId).HasColumnName(EntitiesConstants.Nominals.SexoId);
+                {}
+            });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
+            {}
+            OnPersonaBaseCreating(modelBuilder);
+
+            modelBuilder.Entity<VisAlu>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("VIS_ALU");
+
+                //entity.Property(e => e.Abr)
+                //    .HasMaxLength(10)
+                //    .IsUnicode(false)
+                //    .HasColumnName("ABR")
+                //    .IsFixedLength();
+
+                entity.Property(e => e.AnoIngreso).HasMaxLength(4);
+
+                entity.Property(e => e.Apellido).HasMaxLength(40);
+
+                /* entity.Property(e => e.ApellidoAuto)
+                     .HasMaxLength(40)
+                     .HasColumnName("APELLIDO_AUTO");
+
+                 entity.Property(e => e.ApellidoDni)
+                     .HasMaxLength(40)
+                     .HasColumnName("APELLIDO_DNI");*/
+
+                //  entity.Property(e => e.Bcoleg).HasColumnName("BCOLEG");
+
+                entity.Property(e => e.CarreraId).HasColumnName("CarreraId_");
+
+                entity.Property(e => e.Convenio).HasMaxLength(1);
+
+                entity.Property(e => e.Cp)
+                    .HasMaxLength(8)
+                    .HasColumnName("CP");
+
+                entity.Property(e => e.CuatrIngreso)
+                    .HasMaxLength(5)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                /*    entity.Property(e => e.Cuit)
+                        .HasMaxLength(25)
+                        .HasColumnName("CUIT");*/
+
+                entity.Property(e => e.CuotaIngreso)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                /*   entity.Property(e => e.Cuotacero)
+                       .HasMaxLength(1)
+                       .IsUnicode(false)
+                       .HasColumnName("CUOTACERO")
+                       .IsFixedLength();*/
+
+                // entity.Property(e => e.Cuotaextr).HasColumnName("CUOTAEXTR");
+
+                entity.Property(e => e.Curing)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("CURING")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Debedni)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("DEBEDNI")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Debetit)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("DEBETIT")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Direccion).HasMaxLength(160);
+
+                /* entity.Property(e => e.Dispos25)
+                     .HasMaxLength(10)
+                     .IsUnicode(false)
+                     .HasColumnName("DISPOS25")
+                     .IsFixedLength();
+
+                 entity.Property(e => e.Docuextr)
+                     .HasMaxLength(40)
+                     .HasColumnName("DOCUEXTR");*/
+
+                entity.Property(e => e.Documenta)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("DOCUMENTA")
+                    .IsFixedLength();
+
+                /*   entity.Property(e => e.Eg1)
+                       .HasMaxLength(200)
+                       .HasColumnName("EG1");
+
+                   entity.Property(e => e.Eg1cod).HasColumnName("EG1COD");
+
+                   entity.Property(e => e.Eg2)
+                       .HasMaxLength(200)
+                       .HasColumnName("EG2");*/
+
+                /*    entity.Property(e => e.Eg2cod).HasColumnName("EG2COD");
+
+                    entity.Property(e => e.Extranjero)
+                        .HasMaxLength(1)
+                        .IsUnicode(false)
+                        .HasColumnName("EXTRANJERO")
+                        .IsFixedLength();*/
+
+                entity.Property(e => e.FecIns).HasColumnType("smalldatetime");
+
+                entity.Property(e => e.FecNac).HasColumnType("smalldatetime");
+
+                /*   entity.Property(e => e.FecRei).HasColumnType("smalldatetime");
+
+                   entity.Property(e => e.FecSec).HasColumnType("smalldatetime");*/
+
+                entity.Property(e => e.Feclib)
+                    .HasColumnType("smalldatetime")
+                    .HasColumnName("FECLIB");
+
+                /*  entity.Property(e => e.Fectit)
+                      .HasColumnType("smalldatetime")
+                      .HasColumnName("FECTIT");*/
+
+                entity.Property(e => e.FinDes).HasColumnType("smalldatetime");
+
+                entity.Property(e => e.FinHas).HasColumnType("smalldatetime");
+
+                // entity.Property(e => e.Genero).HasColumnName("GENERO");
+
+                entity.Property(e => e.Guabeca).HasColumnName("GUABECA");
+
+                entity.Property(e => e.Guacuit)
+                    .HasMaxLength(25)
+                    .IsUnicode(false)
+                    .HasColumnName("GUACUIT")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Guadate)
+                    .HasMaxLength(8)
+                    .IsUnicode(false)
+                    .HasColumnName("GUADATE")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Guainma).HasColumnName("GUAINMA");
+
+                entity.Property(e => e.Guainpa).HasColumnName("GUAINPA");
+
+                entity.Property(e => e.Gualoca).HasColumnName("GUALOCA");
+
+                entity.Property(e => e.Guapnac).HasColumnName("GUAPNAC");
+
+                entity.Property(e => e.Guapres).HasColumnName("GUAPRES");
+
+                entity.Property(e => e.Guatrab).HasColumnName("GUATRAB");
+
+                /*entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Intercambio)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("INTERCAMBIO")
+                    .IsFixedLength();
+
+                entity.Property(e => e.LetraDoc)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Libreta)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("LIBRETA")
+                    .IsFixedLength();*/
+
+                entity.Property(e => e.LocalidadId).HasColumnName("LocalidadId_");
+
+                /*   entity.Property(e => e.LocalidadTxt).HasMaxLength(150);
+
+                   entity.Property(e => e.LugMundo)
+                       .HasMaxLength(2)
+                       .IsUnicode(false)
+                       .IsFixedLength()
+                       .UseCollation("Modern_Spanish_CI_AS");*/
+
+                entity.Property(e => e.Mail).HasMaxLength(150);
+
+                entity.Property(e => e.MotBaja).HasMaxLength(50);
+
+                entity.Property(e => e.Nacio).HasMaxLength(50);
+
+                entity.Property(e => e.Nombres).HasMaxLength(50);
+
+                /*   entity.Property(e => e.NombresAuto)
+                       .HasMaxLength(50)
+                       .HasColumnName("NOMBRES_AUTO");
+
+                   entity.Property(e => e.NombresDni)
+                       .HasMaxLength(50)
+                       .HasColumnName("NOMBRES_DNI");
+
+                   entity.Property(e => e.Observa)
+                       .HasColumnType("text")
+                       .HasColumnName("OBSERVA");*/
+
+                entity.Property(e => e.Orienta).HasMaxLength(1);
+
+                // entity.Property(e => e.Pais).HasMaxLength(150);
+
+                // entity.Property(e => e.Partido).HasMaxLength(150);
+
+                //  entity.Property(e => e.Present3).HasColumnName("PRESENT3");
+
+                //   entity.Property(e => e.Promsec).HasColumnName("PROMSEC");
+
+                //   entity.Property(e => e.Recibido).HasMaxLength(1);
+
+                entity.Property(e => e.Recifecha)
+                    .HasColumnType("smalldatetime")
+                    .HasColumnName("RECIFECHA");
+
+                entity.Property(e => e.ReguAnt).HasMaxLength(1);
+
+                entity.Property(e => e.Regular).HasMaxLength(1);
+
+                entity.Property(e => e.ResAno).HasMaxLength(4);
+
+                entity.Property(e => e.ResFec).HasColumnType("smalldatetime");
+
+                /*      entity.Property(e => e.Residente)
+                          .HasMaxLength(1)
+                          .IsUnicode(false)
+                          .HasColumnName("RESIDENTE")
+                          .IsFixedLength();
+
+                      entity.Property(e => e.SexoDni).HasColumnName("SEXO_DNI");
+                */
+                entity.Property(e => e.SexoId).HasColumnName("SexoId_");
+
+                entity.Property(e => e.Suspcuatri)
+                    .HasMaxLength(5)
+                    .IsUnicode(false)
+                    .HasColumnName("SUSPCUATRI")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Suspendido)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("SUSPENDIDO")
+                    .IsFixedLength()
+                    .UseCollation("Modern_Spanish_CI_AS");
+
+                entity.Property(e => e.Suspfecha)
+                    .HasColumnType("smalldatetime")
+                    .HasColumnName("SUSPFECHA");
+
+                entity.Property(e => e.Suspproce).HasColumnName("SUSPPROCE");
+
+                entity.Property(e => e.Telefono).HasMaxLength(50);
+
+                entity.Property(e => e.Tipo)
+                    .HasMaxLength(1)
+                    .HasColumnName("TIPO");
+
+                /* entity.Property(e => e.TitSec).HasMaxLength(180);
+
+                 entity.Property(e => e.TitTer).HasMaxLength(180);
+
+                 entity.Property(e => e.TitUni).HasMaxLength(180);
+
+                 entity.Property(e => e.TraHrs).HasColumnType("decimal(18, 0)");
+
+                 entity.Property(e => e.TraTipo).HasColumnType("decimal(18, 0)");
+
+                 entity.Property(e => e.Trabaja).HasColumnType("decimal(18, 0)");
+
+                 entity.Property(e => e.TurnoId).HasColumnName("TurnoId_");
+
+                 entity.Property(e => e.UpcnafiliadoNro).HasColumnName("UPCNAfiliadoNro");
+
+                 entity.Property(e => e.UpcnafiliadoTipo)
+                     .HasMaxLength(1)
+                     .IsUnicode(false)
+                     .HasColumnName("UPCNAfiliadoTipo")
+                     .IsFixedLength();
+
+                 entity.Property(e => e.Usualu)
+                     .HasMaxLength(100)
+                     .HasColumnName("USUALU")
+                     .IsFixedLength();*/
+
+                entity.Property(e => e.Usucla)
+                    .HasMaxLength(20)
+                    .HasColumnName("USUCLA");
+
+                /*entity.Property(e => e.Vencresid).HasColumnName("VENCRESID");
+
+                entity.Property(e => e.Visacod)
+                    .HasMaxLength(8)
+                    .HasColumnName("VISACOD")
+                    .IsFixedLength()
+                    .UseCollation("Modern_Spanish_CI_AS");
+
+                entity.Property(e => e.Visapri)
+                    .HasMaxLength(1)
+                    .HasColumnName("VISAPRI")
+                    .IsFixedLength()
+                    .UseCollation("Modern_Spanish_CI_AS");
+
+                entity.Property(e => e.Visatarjeta)
+                    .HasMaxLength(16)
+                    .HasColumnName("VISATARJETA")
+                    .IsFixedLength()
+                    .UseCollation("Modern_Spanish_CI_AS");
+
+                entity.Property(e => e.Visatartipo)
+                    .HasMaxLength(2)
+                    .HasColumnName("VISATARTIPO")
+                    .IsFixedLength()
+                    .UseCollation("Modern_Spanish_CI_AS");*/
+            });
+
 
             modelBuilder.Entity<Calendario>(entity =>
             {
@@ -4271,329 +4700,9 @@ namespace CalistoDbCore.U3FEntities
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<VisAlu>(entity =>
-            {
-                entity.HasNoKey();
 
-                entity.ToView("VIS_ALU");
 
-                entity.Property(e => e.Abr)
-                    .HasMaxLength(10)
-                    .IsUnicode(false)
-                    .HasColumnName("ABR")
-                    .IsFixedLength();
-
-                entity.Property(e => e.AnoIngreso).HasMaxLength(4);
-
-                entity.Property(e => e.Apellido).HasMaxLength(40);
-
-                entity.Property(e => e.ApellidoAuto)
-                    .HasMaxLength(40)
-                    .HasColumnName("APELLIDO_AUTO");
-
-                entity.Property(e => e.ApellidoDni)
-                    .HasMaxLength(40)
-                    .HasColumnName("APELLIDO_DNI");
-
-                entity.Property(e => e.Bcoleg).HasColumnName("BCOLEG");
-
-                entity.Property(e => e.CarreraId).HasColumnName("CarreraId_");
-
-                entity.Property(e => e.Convenio).HasMaxLength(1);
-
-                entity.Property(e => e.Cp)
-                    .HasMaxLength(8)
-                    .HasColumnName("CP");
-
-                entity.Property(e => e.CuatrIngreso)
-                    .HasMaxLength(5)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.Cuit)
-                    .HasMaxLength(25)
-                    .HasColumnName("CUIT");
-
-                entity.Property(e => e.CuotaIngreso)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.Cuotacero)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("CUOTACERO")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Cuotaextr).HasColumnName("CUOTAEXTR");
-
-                entity.Property(e => e.Curing)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("CURING")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Debedni)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("DEBEDNI")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Debetit)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("DEBETIT")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Direccion).HasMaxLength(160);
-
-                entity.Property(e => e.Dispos25)
-                    .HasMaxLength(10)
-                    .IsUnicode(false)
-                    .HasColumnName("DISPOS25")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Docuextr)
-                    .HasMaxLength(40)
-                    .HasColumnName("DOCUEXTR");
-
-                entity.Property(e => e.Documenta)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("DOCUMENTA")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Eg1)
-                    .HasMaxLength(200)
-                    .HasColumnName("EG1");
-
-                entity.Property(e => e.Eg1cod).HasColumnName("EG1COD");
-
-                entity.Property(e => e.Eg2)
-                    .HasMaxLength(200)
-                    .HasColumnName("EG2");
-
-                entity.Property(e => e.Eg2cod).HasColumnName("EG2COD");
-
-                entity.Property(e => e.Extranjero)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("EXTRANJERO")
-                    .IsFixedLength();
-
-                entity.Property(e => e.FecIns).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.FecNac).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.FecRei).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.FecSec).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.Feclib)
-                    .HasColumnType("smalldatetime")
-                    .HasColumnName("FECLIB");
-
-                entity.Property(e => e.Fectit)
-                    .HasColumnType("smalldatetime")
-                    .HasColumnName("FECTIT");
-
-                entity.Property(e => e.FinDes).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.FinHas).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.Genero).HasColumnName("GENERO");
-
-                entity.Property(e => e.Guabeca).HasColumnName("GUABECA");
-
-                entity.Property(e => e.Guacuit)
-                    .HasMaxLength(25)
-                    .IsUnicode(false)
-                    .HasColumnName("GUACUIT")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Guadate)
-                    .HasMaxLength(8)
-                    .IsUnicode(false)
-                    .HasColumnName("GUADATE")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Guainma).HasColumnName("GUAINMA");
-
-                entity.Property(e => e.Guainpa).HasColumnName("GUAINPA");
-
-                entity.Property(e => e.Gualoca).HasColumnName("GUALOCA");
-
-                entity.Property(e => e.Guapnac).HasColumnName("GUAPNAC");
-
-                entity.Property(e => e.Guapres).HasColumnName("GUAPRES");
-
-                entity.Property(e => e.Guatrab).HasColumnName("GUATRAB");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.Intercambio)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("INTERCAMBIO")
-                    .IsFixedLength();
-
-                entity.Property(e => e.LetraDoc)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.Libreta)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("LIBRETA")
-                    .IsFixedLength();
-
-                entity.Property(e => e.LocalidadId).HasColumnName("LocalidadId_");
-
-                entity.Property(e => e.LocalidadTxt).HasMaxLength(150);
-
-                entity.Property(e => e.LugMundo)
-                    .HasMaxLength(2)
-                    .IsUnicode(false)
-                    .IsFixedLength()
-                    .UseCollation("Modern_Spanish_CI_AS");
-
-                entity.Property(e => e.Mail).HasMaxLength(150);
-
-                entity.Property(e => e.MotBaja).HasMaxLength(50);
-
-                entity.Property(e => e.Nacio).HasMaxLength(50);
-
-                entity.Property(e => e.Nombres).HasMaxLength(50);
-
-                entity.Property(e => e.NombresAuto)
-                    .HasMaxLength(50)
-                    .HasColumnName("NOMBRES_AUTO");
-
-                entity.Property(e => e.NombresDni)
-                    .HasMaxLength(50)
-                    .HasColumnName("NOMBRES_DNI");
-
-                entity.Property(e => e.Observa)
-                    .HasColumnType("text")
-                    .HasColumnName("OBSERVA");
-
-                entity.Property(e => e.Orienta).HasMaxLength(1);
-
-                entity.Property(e => e.Pais).HasMaxLength(150);
-
-                entity.Property(e => e.Partido).HasMaxLength(150);
-
-                entity.Property(e => e.Present3).HasColumnName("PRESENT3");
-
-                entity.Property(e => e.Promsec).HasColumnName("PROMSEC");
-
-                entity.Property(e => e.Recibido).HasMaxLength(1);
-
-                entity.Property(e => e.Recifecha)
-                    .HasColumnType("smalldatetime")
-                    .HasColumnName("RECIFECHA");
-
-                entity.Property(e => e.ReguAnt).HasMaxLength(1);
-
-                entity.Property(e => e.Regular).HasMaxLength(1);
-
-                entity.Property(e => e.ResAno).HasMaxLength(4);
-
-                entity.Property(e => e.ResFec).HasColumnType("smalldatetime");
-
-                entity.Property(e => e.Residente)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("RESIDENTE")
-                    .IsFixedLength();
-
-                entity.Property(e => e.SexoDni).HasColumnName("SEXO_DNI");
-
-                entity.Property(e => e.SexoId).HasColumnName("SexoId_");
-
-                entity.Property(e => e.Suspcuatri)
-                    .HasMaxLength(5)
-                    .IsUnicode(false)
-                    .HasColumnName("SUSPCUATRI")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Suspendido)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("SUSPENDIDO")
-                    .IsFixedLength()
-                    .UseCollation("Modern_Spanish_CI_AS");
-
-                entity.Property(e => e.Suspfecha)
-                    .HasColumnType("smalldatetime")
-                    .HasColumnName("SUSPFECHA");
-
-                entity.Property(e => e.Suspproce).HasColumnName("SUSPPROCE");
-
-                entity.Property(e => e.Telefono).HasMaxLength(50);
-
-                entity.Property(e => e.Tipo)
-                    .HasMaxLength(1)
-                    .HasColumnName("TIPO");
-
-                entity.Property(e => e.TitSec).HasMaxLength(180);
-
-                entity.Property(e => e.TitTer).HasMaxLength(180);
-
-                entity.Property(e => e.TitUni).HasMaxLength(180);
-
-                entity.Property(e => e.TraHrs).HasColumnType("decimal(18, 0)");
-
-                entity.Property(e => e.TraTipo).HasColumnType("decimal(18, 0)");
-
-                entity.Property(e => e.Trabaja).HasColumnType("decimal(18, 0)");
-
-                entity.Property(e => e.TurnoId).HasColumnName("TurnoId_");
-
-                entity.Property(e => e.UpcnafiliadoNro).HasColumnName("UPCNAfiliadoNro");
-
-                entity.Property(e => e.UpcnafiliadoTipo)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .HasColumnName("UPCNAfiliadoTipo")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Usualu)
-                    .HasMaxLength(100)
-                    .HasColumnName("USUALU")
-                    .IsFixedLength();
-
-                entity.Property(e => e.Usucla)
-                    .HasMaxLength(20)
-                    .HasColumnName("USUCLA");
-
-                entity.Property(e => e.Vencresid).HasColumnName("VENCRESID");
-
-                entity.Property(e => e.Visacod)
-                    .HasMaxLength(8)
-                    .HasColumnName("VISACOD")
-                    .IsFixedLength()
-                    .UseCollation("Modern_Spanish_CI_AS");
-
-                entity.Property(e => e.Visapri)
-                    .HasMaxLength(1)
-                    .HasColumnName("VISAPRI")
-                    .IsFixedLength()
-                    .UseCollation("Modern_Spanish_CI_AS");
-
-                entity.Property(e => e.Visatarjeta)
-                    .HasMaxLength(16)
-                    .HasColumnName("VISATARJETA")
-                    .IsFixedLength()
-                    .UseCollation("Modern_Spanish_CI_AS");
-
-                entity.Property(e => e.Visatartipo)
-                    .HasMaxLength(2)
-                    .HasColumnName("VISATARTIPO")
-                    .IsFixedLength()
-                    .UseCollation("Modern_Spanish_CI_AS");
-            });
+          
 
             modelBuilder.Entity<VisExaCur>(entity =>
             {

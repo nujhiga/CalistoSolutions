@@ -1,14 +1,17 @@
 ﻿using System.Linq.Expressions;
+
 using CalistoDbCore.Expressions.BuildingOptions.OptionsModels;
+using CalistoDbCore.Expressions.Enumerations;
+using CalistoDbCore.Services.Repositories;
 
 namespace CalistoDbCore.Expressions.Extensions;
 
 public static class BuilderExtensions
 {
-    public static bool IsValid<T>(this BuilderOption<T> option) 
-        => option is not null && option.Value is not null && option.Name is not null;
+    public static bool IsValid<T>(this BuilderOption<T> option)
+        => option is not null && option.ConstValue is not null && option.FieldName is not null;
 
-    public static IQueryable<TEntity> WithExpressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions)
+    public static IQueryable<TEntity> WithExpressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions) where TEntity : class
     {
         const string where = "Where";
 
@@ -26,26 +29,47 @@ public static class BuilderExtensions
 
         return query.Provider.CreateQuery<TEntity>(callTree);
     }
-    /*public static IQueryable<TEntity> UsginExppressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions)
+
+
+    public static DbPeriod GetDbPeriod(this DbRequestSign sign) => sign switch
     {
-        const string where = "Where";
+        DbRequestSign.GetSyncCareers => DbPeriod.CuatrIngreso,
+        DbRequestSign.GetSyncCommissions => DbPeriod.Cuatrimestre,
+        _ => throw default
+    };
 
-        Type caller = typeof(Queryable);
-        Type[] entities = { typeof(TEntity) };
+    public static DbCampus GetDbCampus(this DbRequestSign sign) => sign switch
+    {
+        DbRequestSign.GetSyncCareers => DbCampus.ConvCod,
+        DbRequestSign.GetSyncCommissions => DbCampus.Campus,
+        _ => throw default
+    };
 
-        Expression root = query.Expression;
 
-        MethodCallExpression callTree = Expression.Call
-            (caller, where, entities, root, expressions[0]);
 
-        for (int i = 1; i < expressions.Length; i++)
-            callTree = Expression.Call(caller, where,
-                entities, callTree, expressions[i]);
-
-        return query.Provider.CreateQuery<TEntity>(callTree);
-    }*/
+    public static Enum GetEnumSign(this DbRequestSign sign) => sign switch
+    {
+        DbRequestSign.GetSyncCareers => DbCareers.CarreraId,
+        DbRequestSign.GetSyncCommissions or DbRequestSign.GetCommissions => DbCommissions.Comision,
+        DbRequestSign.GetCareers => DbCareers.Id,
+        DbRequestSign.GetStudentsSync => DbUsers.Legajo,
+        _ => throw default
+    };
+    
 }
 
 
 
 
+//None,
+//GetPersons,
+//GetStudents,
+//GetTeachers,
+//GetCareers,
+//GetCareerPlans,
+//GetAssignatures,
+//GetCommissions,
+//GetStudentsSync,
+//GetSyncCareers,
+//GetSyncCommissions,
+//GetSyncExamns

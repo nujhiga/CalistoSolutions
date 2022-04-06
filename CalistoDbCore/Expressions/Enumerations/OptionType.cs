@@ -8,5 +8,7 @@ public enum OptionType
     Career,
     Commission,
     User,
-    Regular
+    Regular,
+    Name,
+    Document
 }

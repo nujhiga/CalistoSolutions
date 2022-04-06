@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CalistoStandars.Definitions.Structures;
+﻿namespace CalistoStandars.Definitions.Structures;
 public readonly struct ExecutionOptions
 {
     public readonly bool CacheResults;

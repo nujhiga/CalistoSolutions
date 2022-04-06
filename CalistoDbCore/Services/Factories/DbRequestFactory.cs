@@ -1,70 +1,153 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using CalistoDbCore.Expressions.Builders;
 using CalistoDbCore.Expressions.BuildingOptions.Factory;
 
 using CalistoDbCore.Expressions.BuildingOptions;
 using CalistoDbCore.Services.Repositories;
 using CalistoDbCore.U3FEntities;
+using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
-using CalistoStandars.Definitions.Enumerations;
-using System.Linq.Expressions;
-using CalistoDbCore.Expressions.Enumerations;
-using CalistoDbCore.Expressions.Factories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CalistoDbCore.Services.Factories;
 
 
-public sealed class DbRequestFactory
+public static class DbRequestFactory
 {
-    private readonly DbRepository _repository;
 
-    public DbRequestFactory(in DbRepository repository) => _repository = repository;
 
-    //public IQueryable<IEntity> GetRequest(in U3FContext ctx, in RequestAction requestAction, in SelectionDepth selectionDepth) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //public static IEnumerable<IEntity> GetEntities<TEntity>(in U3FContext ctx,
+    //    in DbRequestParameter<DbRequestSign> parameter) where TEntity : class
     //{
-    //    IQueryable<IEntity> request = requestAction switch
-    //    {
-    //        RequestAction.SyncCareerStudents => GetSyncCareerStudents(in ctx, in selectionDepth),
-    //        _ => null!
-    //    };
+    //    { }
+
+    //    (BuilderOptions options, Selector selector, EntityQueryBuilder2<IEntity> builder) = GetBuildingResources<IEntity>(in parameter);
+
+    //    using AcademicEntityContext acdCtx = new AcademicEntityContext();
+        
+    //    selector.RequestingSigns = new []{ EntityMemberSign.Documento, EntityMemberSign.Nombres };
+
     //    {}
-    //    return request;
+
+    //    IEnumerable<IEntity> entities = builder.GetQuery(acdCtx.NominalEntities)
+    //        .Select(SelectionExpressionFactory.GetSelector<IEntity>(selector));
+
+    //    {}
+
+    //    var mm = ctx.Model.GetEntityTypes();
+
+    //    var vsa = mm.Where(m => m.ClrType == typeof(NominalEntity)).AsQueryable();
+    //    { }
+
+
+    //    //IEnumerable<IEntity> entities = builder.GetQuery(x)
+    //    //    .Select(SelectionExpressionFactory.GetSelector<IEntity>(selector)).ToList();
+
+    //    return null;
     //}
-    /*
-    public IQueryable<object> GetRequest(in U3FContext ctx, in RequestAction requestAction, in SelectionDepth selectionDepth)
-    {
-        IQueryable<object> request = requestAction switch
-        {
-            RequestAction.SyncCareerStudents => GetSyncCareerStudents(in ctx, in selectionDepth),
-            _ => null!
-        };
-        { }
-        return request;
-    }*/
 
 
-    public IEnumerable<object> GetSyncCareerStudents2(in U3FContext ctx, in SelectionDepth selectionDepth) 
-    {
-        using BuilderOptions options = BuilderOptionsFactory.
-            GetCareerStudentsSync(_repository);
 
-        StudentsQueries query = new StudentsQueries(options);
+    //public static IEnumerable<INominalEntity> GetEntities2(in U3FContext ctx,
+    //    in DbRequestParameter<DbRequestSign> parameter) //where TEntity : class
+    //{
+    //    { }
 
-        var students = query.GetSyncCareerQuery(ctx.VisAlus)?
-            .Select(SelectorFactory.GetVisAlu(selectionDepth));
+    //    (BuilderOptions options, Selector selector, EntityQueryBuilder2<INominalEntity> builder) = 
+    //        GetBuildingResources<INominalEntity>(in parameter);
 
-        return students.ToList()!;
-    }
+    //    using AcademicEntityContext acdCtx = new AcademicEntityContext();
+
+    //   // selector.RequestingSigns = new[] { EntityMemberSign.Documento, EntityMemberSign.Nombres };
+
+    //    { }
+
+    //    IEnumerable<INominalEntity> entities = builder.GetQuery(acdCtx.NominalEntities)
+    //        .Select(SelectionExpressionFactory.GetSelector<INominalEntity>(selector));
+
+    //    { }
+
+    //    var mm = ctx.Model.GetEntityTypes();
+
+    //    var vsa = mm.Where(m => m.ClrType == typeof(NominalEntity)).AsQueryable();
+    //    { }
+
+
+    //    //IEnumerable<IEntity> entities = builder.GetQuery(x)
+    //    //    .Select(SelectionExpressionFactory.GetSelector<IEntity>(selector)).ToList();
+
+    //    return null;
+    //}
+
+
+    /*  private static IEnumerable<TEntity> GetSyncCareerStudents<TEntity>(in U3FContext ctx, in DbRequestParameter<DbRequestSign> parameter) where TEntity : class, IEntity
+      {
+          (BuilderOptions options, Selector selector, EntityQueryBuilder2<TEntity> builder) = GetBuildingResources<TEntity>(in parameter);
+
+          IEnumerable<TEntity> entities = builder.GetQuery(ctx.VisAlus).
+              Select(SelectionExpressionFactory.GetSelector<TEntity>(selector)).ToList();
+      }*/
+
+
+    //private static (BuilderOptions options, Selector selector, EntityQueryBuilder2<TEntity> builder) GetBuildingResources<TEntity>(in DbRequestParameter<DbRequestSign> parameter)
+    //    where TEntity : class
+    //{
+    //    BuilderOptions options =
+    //        BuilderOptionFactory.GetOptions(in parameter);
+
+    //    Selector selector = new Selector
+    //        (parameter.Source!, parameter.SelectionSigns!);
+
+    //    EntityQueryBuilder2<TEntity> builder = new
+    //        EntityQueryBuilder2<TEntity>(in options);
+
+    //    return (options, selector, builder);
+    //}
+
+
+
+
+    //TEntity auxInstance = Activator.CreateInstance<TEntity>();
+
+    //SelectorParameters<IPersonEntity> selParams = new SelectorParameters<IPersonEntity>(auxInstance)
+    //{
+    //    RequestingSigns = new[] { EntityMemberSign.Legajo, EntityMemberSign.Nombres, EntityMemberSign.Apellido }
+    //};
+
+    //EntityQueryBuilder<TEntity> qBuilder = new EntityQueryBuilder<TEntity>(options);
+
+    //IEnumerable<IPersonEntity> entities = qBuilder.GetSyncCareerQuery(ctx.VisAlus)
+    //        .Select(SelectionExpressionFactory.GetSelector<IPersonEntity>(selParams));
+
+    //    //uss query = new StudentsQueries(options);
+
+    //    //var students = query.GetSyncCareerQuery(ctx.VisAlus)?
+    //    //    .Select(SelectorFactory.GetVisAlu(selectionDepth));
+
+    //    return entities.ToList()!;
 
     /*
 
     private IQueryable<VisAlu> GetSyncCareerStudents(in U3FContext ctx, in SelectionDepth selectionDepth)
     {
-        using BuilderOptions options = BuilderOptionsFactory.
+        using BuilderOptions options = BuilderOptionFactory.
             GetCareerStudentsSync(_repository);
 
         StudentsQueries query = new StudentsQueries(options);
@@ -79,7 +162,7 @@ public sealed class DbRequestFactory
 
     //private IQueryable<VisAlu> GetSyncCareerStudents(in U3FContext ctx, in SelectionDepth selectionDepth)
     //{
-    //    using BuilderOptions options = BuilderOptionsFactory.
+    //    using BuilderOptions options = BuilderOptionFactory.
     //        GetCareerStudentsSync(_repository);
 
     //    StudentsQueries query = new StudentsQueries(options);

@@ -1,6 +1,6 @@
 ﻿namespace CalistoDbCore.Expressions.Enumerations;
 
-public enum DbPeriods
+public enum DbPeriod
 {
     None,
     CuatrIngreso,

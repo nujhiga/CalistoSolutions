@@ -4,6 +4,7 @@ public enum DbCareers
 {
     None,
     CarreraId,
+    Id,
 }
 
 

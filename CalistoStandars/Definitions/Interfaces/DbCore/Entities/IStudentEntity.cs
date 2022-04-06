@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CalistoStandars.Definitions.Interfaces.DbCore.Entities;
+//public interface IStudentEntity : IEntity
+//{
 
-namespace CalistoStandars.Definitions.Interfaces.DbCore.Entities;
-public interface IStudentEntity : IEntity
-{
-
-}
+//}
