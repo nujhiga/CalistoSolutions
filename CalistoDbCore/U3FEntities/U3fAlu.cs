@@ -1,7 +1,10 @@
-﻿namespace CalistoDbCore.U3FEntities
+﻿using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
+
+namespace CalistoDbCore.U3FEntities
 {
-    public partial class U3fAlu
+    public partial class U3fAlu : IEntity
     {
+        public object EntityID => Legajo;
         public double Legajo { get; set; }
         public string? Apellido { get; set; }
         public string? Nombres { get; set; }

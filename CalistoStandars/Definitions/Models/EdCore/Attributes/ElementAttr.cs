@@ -8,7 +8,7 @@ public class ElementAttr : Attribute
     public readonly Enum SignEnum;
 
     public readonly string MarkerRef;
-
+    
     public ElementAttr(ElementType elementType) => ElementType = elementType;
 
     public ElementAttr(ElementType elementType, Enum signEnum)
@@ -22,4 +22,12 @@ public class ElementAttr : Attribute
         ElementType = elementType;
         MarkerRef = marketRef;
     }
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class DbParamAttr : ElementAttr
+{
+    public readonly Type ParamValueType;
+    public DbParamAttr(Type paramValueType) : 
+        base(ElementType.Parameter) => ParamValueType = paramValueType;
 }

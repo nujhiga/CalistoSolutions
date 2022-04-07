@@ -1,6 +1,5 @@
 ﻿using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Models.DbCore.Attributes;
-using CalistoStandars.Definitions.Models.DbCore.Entities.Constants;
 
 namespace CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 

@@ -4,7 +4,7 @@ public enum SelectionDepth
 {
     None,
     Avoid,
-    When,
+    //When,
     Simple,
     CompleteSimple,
     Complete,

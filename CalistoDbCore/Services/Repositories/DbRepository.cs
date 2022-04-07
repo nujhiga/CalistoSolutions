@@ -1,17 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
-
+using CalistoDbCore.Expressions.Builders;
 using CalistoDbCore.Expressions.Enumerations;
-using CalistoDbCore.Services.Factories;
 using CalistoDbCore.U3FEntities;
 
 using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 using CalistoStandars.Definitions.Models;
 using CalistoStandars.Definitions.Structures;
-using CalistoStandars.Definitions.Models.DbCore.Entities;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace CalistoDbCore.Services.Repositories;
@@ -20,6 +18,7 @@ public enum DbRequestSign
 {
     None,
     GetPersons,
+    GetNominals,
     GetStudents,
     GetTeachers,
     GetCareers,
@@ -34,72 +33,102 @@ public enum DbRequestSign
 
 public static class DbRequestParameterExtensions
 {
-    public static DbRequestParameter<TSign> With<TSign>(this DbRequestParameter<TSign> requestParam, TSign value) where TSign : Enum
+    //public static DbRequestParameter<TSign> With<TSign>(this DbRequestParameter<TSign> requestParam, TSign value) where TSign : Enum
+    //{
+    //    requestParam.RequestSign = value;
+    //    return requestParam;
+    //}
+
+    public static DbRequestParameter New(this DbRequestParameter requestParam, DbRequestSign value)
     {
-        requestParam.RequestSign = value;
-        return requestParam;
-
-    }
-    public static DbRequestParameter<DbRequestSign> With<TValue>(this DbRequestParameter<DbRequestSign> requestParam, object value)
-    {
-        if (typeof(TValue) == typeof(IEntity))
-        {
-            requestParam.Source = value;
-            return requestParam;
-        }
-
-        if (typeof(TValue) == typeof(DbRegularity))
-        {
-            requestParam.WithRegularity = (DbRegularity)value;
-            return requestParam;
-        }
-
-        if (typeof(TValue) == typeof(ClCampus))
-        {
-            requestParam.FromCampus = (ClCampus)value;
-            return requestParam;
-        }
-
-        if (typeof(TValue) == typeof(int?[]))
-        {
-            requestParam.WithAcademicID = (int?[])value;
-            return requestParam;
-        }
-
-        if (typeof(TValue) == typeof(double[]))
-        {
-            requestParam.WithUsers = (double[])value!;
-            return requestParam;
-        }
-
-        if (typeof(TValue) == typeof(Period[]))
-        {
-            requestParam.OnPeriods = (Period[])value!;
-            return requestParam;
-        }
-
-        if (typeof(TValue) == typeof(EntityMemberSign[]))
-        {
-            requestParam.SelectionSigns = (EntityMemberSign[])value!;
-            return requestParam;
-        }
+        requestParam = new DbRequestParameter(value);
 
         return requestParam;
     }
+
+
+    public static DbRequestParameter With(this DbRequestParameter requestParam, object value)
+    {
+        if (value is null) return requestParam;
+
+        Type type = value.GetType();
+
+        if (type == typeof(DbRegularity))
+        {
+            requestParam.Regularity = (DbRegularity)value;
+            //return requestParam;
+        }
+        else if (type == typeof(ClCampus))
+        {
+            requestParam.Campus = (ClCampus)value;
+            //return requestParam;
+        }
+        else if (type == typeof(int?[]))
+        {
+            requestParam.AcademicIDs = (int?[])value;
+            //return requestParam;
+        }
+        else if (type == typeof(double[]))
+        {
+            requestParam.UsersIDs = (double[])value!;
+            //return requestParam;
+        }
+        else if (type == typeof(Period[]))
+        {
+            requestParam.Periods = (Period[])value!;
+            //return requestParam;
+        }
+        
+        return requestParam;
+    }
+  
 }
 
-public sealed record DbRequestParameter<TSign> : IDisposable
+public sealed record DbRequestParameter : IDisposable
 {
-    public TSign? RequestSign { get; set; }
-    public ClCampus? FromCampus { get; set; }
-    public DbRegularity? WithRegularity { get; set; }
-    public int?[]? WithAcademicID { get; set; }
-    public double[]? WithUsers { get; set; }
-    public Period[]? OnPeriods { get; set; }
-    public object? Source { get; set; }
-    public EntityMemberSign[]? SelectionSigns { get; set; }
+    public DbRequestSign RequestSign { get; set; }
 
-    public DbRequestParameter(in TSign sign, in ClCampus fromCampus, ref Period[] onPeriods)
+
+    [DbParamAttr(typeof(ClCampus?))]
+    public ClCampus? Campus { get; set; }
+    public bool UseCampus => Campus is { };
+
+
+    [DbParamAttr(typeof(DbRegularity?))]
+    public DbRegularity? Regularity { get; set; }
+    public bool UseRegularity => Regularity is { };
+    
+
+    [DbParamAttr(typeof(int?[]))]
+    public int?[]? AcademicIDs { get; set; }
+    public bool UseAcademicIDs => AcademicIDs is { Length: > 0 };
+
+
+    [DbParamAttr(typeof(double[]))]
+    public double[]? UsersIDs { get; set; }
+    public bool UseUsersIDs => UsersIDs is { Length: > 0 };
+
+
+    [DbParamAttr(typeof(Period[]))]
+    public Period[]? Periods { get; set; }
+    public bool UsePeriods => Periods is { Length: > 0 };
+    
+    public DbRequestParameter(in DbRequestSign sign) => RequestSign = sign;
+
+    public void Dispose()
+    {
+        if (UseAcademicIDs)
+            Array.Clear(AcademicIDs!, 0, AcademicIDs!.Length);
+
+        if (UseUsersIDs)
+            Array.Clear(UsersIDs!, 0, UsersIDs!.Length);
+
+        if (UsePeriods)
+            Array.Clear(Periods!, 0, Periods!.Length);
+    }
+
+    /*
+    public DbRequestParameter(in TSign sign, in ClCampus fromCampus, Period[] onPeriods)
     {
         FromCampus = fromCampus;
         OnPeriods = onPeriods;
@@ -121,7 +150,8 @@ public sealed record DbRequestParameter<TSign> : IDisposable
         if (SelectionSigns is { })
             Array.Clear(SelectionSigns, 0, SelectionSigns.Length);
 
-    }
+    }*/
+
 }
 
 public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerable<IEntity>>
@@ -131,18 +161,18 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
 
     private readonly CacheHandler<DbRequestSign> _cacheControl;
 
-    public DbRequestParameter<DbRequestSign> RequestParam { get; set; }
+    // public DbRequestParameter<DbRequestSign> RequestParam { get; set; }
 
     public DbRepository(CampusTarget campus, Period[] periods)
     {
         Cancellation = new CancellationToken();
         _cacheControl = new CacheHandler<DbRequestSign>(CleanCacheRequest);
 
-        RequestParam = new DbRequestParameter<DbRequestSign>(DbRequestSign.GetSyncCareers, campus.Source, ref periods);
+        // RequestParam = new DbRequestParameter<DbRequestSign>(DbRequestSign.GetSyncCareers, campus.Source, ref periods);
 
     }
 
-    
+
 
     private void CleanCacheRequest(DbRequestSign rtype)
     {
@@ -150,21 +180,44 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         //entities = Enumerable.Empty<TEntity>();
     }
 
-    public async Task<bool> ExecuteRequestAsync(DbRequestSign dataRequestType, SelectionDepth selectionDepth,
-         ExecutionOptions executionOptions, bool disposeParams = true)
+    public async Task<bool> ExecuteRequestAsync<TEntity>(DbRequestSign dataRequestType, SelectionDepth selectionDepth,
+         ExecutionOptions executionOptions, bool disposeParams = true) 
+    where TEntity : class, IEntity
     {
         if (Working) return false;
 
         Working = true;
 
-        await using U3FContext ctx = new();
+        using MrQueryBuilder<TEntity> builder = new MrQueryBuilder<TEntity>();
 
-        INominalEntity person = new NominalEntity();
-        {}
-        RequestParam = RequestParam.With<IEntity>(person).With<DbRegularity>(DbRegularity.Regular).With<EntityMemberSign[]>(new[] { EntityMemberSign.Nombres, EntityMemberSign.Documento });
+        DbRequestParameter parameter = new DbRequestParameter(dataRequestType);
+        parameter = parameter.With(ClCampus.U3F).With(new Period[]{new(20221)});
+
+        IQueryable<TEntity> query = builder.GetQuery(parameter);
+
 
         {}
-     //   var res = DbRequestFactory.GetEntities2(in ctx, RequestParam);
+
+        //QueryBuilder<VisAlu> mm = new QueryBuilder<VisAlu>();
+
+        //using U3FContext ctx = new();
+
+        //var x = await mm.GetSyncQuery( ctx);
+        {}
+
+      //  var qry = x.ToQueryString();
+
+        // var xx = mm.GetNominalEntities();
+
+        { }
+        //await using U3FContext ctx = new();
+
+        //    INominalEntity person = new NominalEntity();
+        { }
+        //  RequestParam = RequestParam.With<IEntity>(person).With<DbRegularity>(DbRegularity.Regular).With<EntityMemberSign[]>(new[] { EntityMemberSign.Nombres, EntityMemberSign.Documento });
+
+        { }
+        //   var res = DbRequestFactory.GetEntities2(in ctx, RequestParam);
         //IQueryable<IEntity> requestingEntities = _dbRequestFactory.
         //    GetRequest(in ctx, in dataRequestType, in selectionDepth);
         { }
@@ -180,7 +233,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         // if (executionOptions.CacheResults)
         //      SetCache(dataRequestType, in results, ref executionOptions);
 
-        if (disposeParams) RequestParam.Dispose();
+        //  if (disposeParams) RequestParam.Dispose();
 
         Working = false;
 

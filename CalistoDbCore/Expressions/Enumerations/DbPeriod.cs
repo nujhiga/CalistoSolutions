@@ -4,7 +4,8 @@ public enum DbPeriod
 {
     None,
     CuatrIngreso,
-    Cuatrimestre
+    Cuatrimestre,
+    AnoIngreso
 }
 
 

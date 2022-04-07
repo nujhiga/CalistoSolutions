@@ -5,7 +5,7 @@ public readonly struct Period : IComparable<Period>, IEquatable<Period>, IEquata
 
     public string StrValue => _value.ToString();
     public short Value => _value;
-
+    public string Year => StrValue[..4];
     public Period(in string strSource) => _ = ValidateStrSource(strSource, out _value);
     public Period(in short shtSource) => _ = ValidateStrSource(shtSource.ToString(), out _value);
     public Period? Next()

@@ -1,5 +1,5 @@
 ﻿using CalistoDbCore.Services.Repositories;
-
+using CalistoDbCore.U3FEntities;
 using CalistoEnvironment;
 
 using CalistoStandars.Definitions.Enumerations;
@@ -17,7 +17,7 @@ clEnvironment.Gateway.CurrentCampus = campus;
 
 var repo = new CalistoDbCore.Services.Repositories.DbRepository(campus, new Period[] {new(20221)});
 
-await repo.ExecuteRequestAsync(DbRequestSign.GetSyncCareers, SelectionDepth.Simple, ExecutionOptions.NoCache);
+await repo.ExecuteRequestAsync<U3fAlu>(DbRequestSign.GetNominals, SelectionDepth.Simple, ExecutionOptions.NoCache);
 
 {}
 

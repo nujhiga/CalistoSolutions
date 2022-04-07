@@ -1,15 +1,4 @@
-﻿using System.Linq.Expressions;
-using CalistoDbCore.Expressions.Builders;
-using CalistoDbCore.Expressions.BuildingOptions.Factory;
-
-using CalistoDbCore.Expressions.BuildingOptions;
-using CalistoDbCore.Services.Repositories;
-using CalistoDbCore.U3FEntities;
-using CalistoStandars.Definitions.Enumerations.DbCore;
-using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
-using Microsoft.EntityFrameworkCore;
-
-namespace CalistoDbCore.Services.Factories;
+﻿namespace CalistoDbCore.Services.Factories;
 
 
 public static class DbRequestFactory
@@ -131,7 +120,7 @@ public static class DbRequestFactory
     //    RequestingSigns = new[] { EntityMemberSign.Legajo, EntityMemberSign.Nombres, EntityMemberSign.Apellido }
     //};
 
-    //EntityQueryBuilder<TEntity> qBuilder = new EntityQueryBuilder<TEntity>(options);
+    //QueryBuilder<TEntity> qBuilder = new QueryBuilder<TEntity>(options);
 
     //IEnumerable<IPersonEntity> entities = qBuilder.GetSyncCareerQuery(ctx.VisAlus)
     //        .Select(SelectionExpressionFactory.GetSelector<IPersonEntity>(selParams));

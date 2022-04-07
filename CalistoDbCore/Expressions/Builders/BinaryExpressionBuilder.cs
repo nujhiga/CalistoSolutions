@@ -1,11 +1,17 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-
+using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 
 namespace CalistoDbCore.Expressions.Builders;
 
-public abstract class BinaryExpressionBuilder<TEntity> where TEntity : class //: BaseExpressionBuilder<TEntity> where TEntity : class
+public abstract class BinaryExpressionBuilder<TEntity> where TEntity : class, IEntity //: BaseExpressionBuilder<TEntity> where TEntity : class
 {
+
+
+
+
+
+
     protected virtual Expression<Func<TEntity, bool>> Contains<TValue>(string target, params TValue[] values)
     {
         MethodInfo method = ExpressionFactory<TEntity>.GetContainsMethod<TValue>()!;

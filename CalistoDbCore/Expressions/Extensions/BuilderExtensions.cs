@@ -1,20 +1,25 @@
 ﻿using System.Linq.Expressions;
 
-using CalistoDbCore.Expressions.BuildingOptions.OptionsModels;
 using CalistoDbCore.Expressions.Enumerations;
 using CalistoDbCore.Services.Repositories;
+using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 
 namespace CalistoDbCore.Expressions.Extensions;
 
 public static class BuilderExtensions
 {
-    public static bool IsValid<T>(this BuilderOption<T> option)
-        => option is not null && option.ConstValue is not null && option.FieldName is not null;
 
-    public static IQueryable<TEntity> WithExpressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions) where TEntity : class
+
+    
+
+
+
+
+
+    public static IQueryable<TEntity> WithExpressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions) where TEntity : class, IEntity
     {
         const string where = "Where";
-
+        
         Type caller = typeof(Queryable);
         Type[] entities = { typeof(TEntity) };
 
@@ -33,14 +38,15 @@ public static class BuilderExtensions
 
     public static DbPeriod GetDbPeriod(this DbRequestSign sign) => sign switch
     {
-        DbRequestSign.GetSyncCareers => DbPeriod.CuatrIngreso,
+        DbRequestSign.GetSyncCareers  => DbPeriod.CuatrIngreso,
+        DbRequestSign.GetNominals => DbPeriod.AnoIngreso,
         DbRequestSign.GetSyncCommissions => DbPeriod.Cuatrimestre,
         _ => throw default
     };
 
     public static DbCampus GetDbCampus(this DbRequestSign sign) => sign switch
     {
-        DbRequestSign.GetSyncCareers => DbCampus.ConvCod,
+        DbRequestSign.GetSyncCareers or DbRequestSign.GetNominals => DbCampus.ConvCod,
         DbRequestSign.GetSyncCommissions => DbCampus.Campus,
         _ => throw default
     };
@@ -59,17 +65,3 @@ public static class BuilderExtensions
 }
 
 
-
-
-//None,
-//GetPersons,
-//GetStudents,
-//GetTeachers,
-//GetCareers,
-//GetCareerPlans,
-//GetAssignatures,
-//GetCommissions,
-//GetStudentsSync,
-//GetSyncCareers,
-//GetSyncCommissions,
-//GetSyncExamns

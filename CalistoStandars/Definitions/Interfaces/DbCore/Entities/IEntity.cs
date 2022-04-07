@@ -2,5 +2,4 @@
 public interface IEntity
 {
     object EntityID { get; }
-    abstract string MyView { get; }
 }

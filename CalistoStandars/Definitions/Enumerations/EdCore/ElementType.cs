@@ -18,6 +18,7 @@ public enum ElementType
     BodyCollection,
     Message,
     Request,
-    Response
+    Response,
+    Parameter
 }
 //ff
