@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+
+using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 
 namespace CalistoDbCore.Expressions.Builders;
@@ -8,7 +10,28 @@ public abstract class BinaryExpressionBuilder<TEntity> where TEntity : class, IE
 {
 
 
+    public static Expression<Func<TEntity, TEntity>> Select(params EntityMemberSign[] selectSigns)
+    {
+        ParameterExpression xParameter = ExpressionFactory<TEntity>.GetParameter();
 
+        NewExpression xNew = ExpressionFactory<TEntity>.GetNew();
+
+        var bindings = selectSigns.Select(sgName =>
+        {
+            PropertyInfo tOutProp = typeof(TEntity).GetProperty($"{sgName}")!;
+
+            MemberExpression tEntProp = ExpressionFactory<TEntity>.GetProperty(xParameter, tOutProp); //Expression.Property(xParameter, tOutProp);
+
+            return ExpressionFactory<TEntity>.GetBind(tOutProp, tEntProp);
+        });
+
+        MemberInitExpression xInit = ExpressionFactory<TEntity>.GetInit(xNew, bindings);
+
+        Expression<Func<TEntity, TEntity>> expression =
+            Expression.Lambda<Func<TEntity, TEntity>>(xInit, xParameter);
+
+        return expression;
+    }
 
 
 

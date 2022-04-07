@@ -16,7 +16,7 @@ public static class BuilderExtensions
 
 
 
-    public static IQueryable<TEntity> WithExpressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions) where TEntity : class, IEntity
+    public static IQueryable<TEntity> WithExpressions<TEntity>(this IQueryable<TEntity> query, params Expression[] expressions) where TEntity : class
     {
         const string where = "Where";
         

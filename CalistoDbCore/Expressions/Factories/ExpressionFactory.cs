@@ -10,28 +10,7 @@ namespace CalistoDbCore.Expressions.Builders;
 public static class ExpressionFactory<TEntity> where TEntity : class, IEntity
 {
     private const string ParamMarker = "p";
-    public static Expression<Func<TEntity, TEntity>> Select(params EntityMemberSign[] selectSigns)
-    {
-        ParameterExpression xParameter = GetParameter();
 
-        NewExpression xNew = GetNew();
-
-        var bindings = selectSigns.Select(sgName =>
-        {
-            PropertyInfo tOutProp = typeof(TEntity).GetProperty($"{sgName}")!;
-
-            MemberExpression tEntProp = GetProperty(xParameter, tOutProp); //Expression.Property(xParameter, tOutProp);
-
-            return GetBind(tOutProp, tEntProp);
-        });
-
-        MemberInitExpression xInit = GetInit(xNew, bindings);
-
-        Expression<Func<TEntity, TEntity>> expression = 
-            Expression.Lambda<Func<TEntity, TEntity>>(xInit, xParameter);
-
-        return expression;
-    }
 
     public record ExpressionPackage(ConstantExpression Constant, ParameterExpression Param, MemberExpression Value);
     public static MethodInfo? GetContainsMethod<TValue>() => typeof(ICollection<TValue>).GetMethod(nameof(Enumerable.Contains), new[] { typeof(TValue) });

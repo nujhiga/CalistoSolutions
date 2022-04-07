@@ -84,7 +84,7 @@ public static class DbRequestParameterExtensions
   
 }
 
-public sealed record DbRequestParameter : IDisposable
+public sealed class DbRequestParameter : IDisposable
 {
     public DbRequestSign RequestSign { get; set; }
 

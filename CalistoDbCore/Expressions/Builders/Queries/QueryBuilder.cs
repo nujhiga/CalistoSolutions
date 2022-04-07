@@ -58,36 +58,23 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
 
     internal abstract IQueryable<TEntity> GetQuery(DbRequestParameter parameter);
 
-    protected Expression<Func<TEntity, TEntity>> BuildSelector(params EntityMemberSign[] memberSigns) 
+    protected Expression<Func<TEntity, TEntity>> BuildSelector(params EntityMemberSign[] memberSigns) => Select(memberSigns);
+    
+    protected IQueryable<TEntity> BuildupQuery(IQueryable<TEntity> dataSourceQuery, params EntityMemberSign[] selectionSigns)
     {
-        return ExpressionFactory<TEntity>.Select(memberSigns);
-    }
-
-    protected IQueryable<TEntity> BuildupQuery(IQueryable<TEntity> dataSourceQuery,
-        params EntityMemberSign[] selectionSigns)
-    {
-        {}
-
         Expression[] expressions = GetDefaultExpressions();
   
         Selector = BuildSelector(selectionSigns);
 
-        {}
-
-        dataSourceQuery.WithExpressions(expressions).
+        IQueryable<TEntity> query = dataSourceQuery.
+            WithExpressions(expressions).
             Select(Selector).AsNoTracking();
-
-        var f = dataSourceQuery.ToQueryString();
-
-
-        { }
-
-        return dataSourceQuery;
+        
+        return query;
     }
 
     public void SetParameter(DbRequestParameter parameter)
     {
-        {}
         Parameter = parameter;
     }
     public void SetParameter(DbRequestSign sign, params object[] values)
@@ -150,8 +137,9 @@ internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FCon
 
     internal override IQueryable<TEntity> GetQuery(DbRequestParameter parameter)
     {
+
         SetParameter(parameter);
-        {}
+
         IQueryable<TEntity> query = parameter.RequestSign switch
         {
             DbRequestSign.GetNominals => GetNominalQuery(),
@@ -167,54 +155,12 @@ internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FCon
     {
         IQueryable<TEntity> query = BuildupQuery(Context.Set<TEntity>(), 
             EntityMemberSignFactory.GetCompleteNominal);
-
-        {}
-
+        
         return query;
     }
 
 
-    //internal IQueryable<TEntity> GetEntityQuery()
-    //{
-
-    //}
-
-    //internal async Task<IEnumerable<TOutEntity>> GetSyncQuery(U3FContext ctx)
-    //{
-    //    Parameter = Parameter.New(DbRequestSign.GetSyncCareers).With(ClCampus.U3F).With(_period);
-
-    //    Expression[] expressions = GetSyncExpressions().ToArray();
-
-    //    EntityMemberSign[] selectorSigns = {EntityMemberSign.Legajo, EntityMemberSign.Mail, EntityMemberSign.Nombres, EntityMemberSign.Documento};
-
-    //    var selector = ExpressionFactory<VisAlu>.Select(selectorSigns);
-
-    //    IQueryable<TEntity> query = null!;
-
-    //    if (typeof(TEntity) == typeof(VisAlu))
-    //        query = (IQueryable<TEntity>)
-    //            Context.VisAlus.WithExpressions(expressions).
-    //                Select(selector).AsNoTracking();
-    //    {}
-
-    //    //QueryEntityConverter<TEntity, TOutEntity> converter = 
-    //    //    new QueryEntityConverter<TEntity, TOutEntity>(query);
-
-
-    //    {}
-
-    //    var queryResult = await EntityConverter.Convert<TEntity, TOutEntity>(query, selectorSigns);
-
-    //    {}
-
-    //    //var qstr = query.ToQueryString();
-    //    //var fff = query.ToList();
-
-    //    {}
-
-
-    //    return null;// queryResult;
-    //}
+    
 
 
 
