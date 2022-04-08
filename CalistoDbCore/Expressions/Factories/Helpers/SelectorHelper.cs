@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
+﻿using System.Reflection;
 
 using CalistoStandars.Definitions.Enumerations;
 using CalistoStandars.Definitions.Enumerations.DbCore;
@@ -11,7 +10,7 @@ namespace CalistoDbCore.Expressions.Builders;
 
 internal static class SelectorHelper
 {
-
+    [Obsolete("Review its usefulness")]
     internal static IEnumerable<PropertyInfo> GetSourcePropertiesParallel<TEntity>(this TEntity source, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
         IEnumerable<PropertyInfo> properties = source!.GetType().GetProperties().AsParallel();
@@ -19,6 +18,7 @@ internal static class SelectorHelper
         foreach (string signName in propertiesSignsFilter.Select(p => $"{p}").AsParallel())
             yield return properties.AsParallel().Single(p => p.Name == signName);
     }
+
 
     internal static IEnumerable<PropertyInfo> GetSourceProperties<TEntity>(this TEntity source, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
@@ -28,32 +28,15 @@ internal static class SelectorHelper
             yield return properties.Single(p => p.Name == signName);
     }
 
-    internal static ConcurrentDictionary<EntityMemberSign, object> GetSourceValues<TEntity>(this TEntity source, in IEnumerable<EntityMemberSign> signs) where TEntity : class
-    {
-        ConcurrentDictionary<EntityMemberSign, object>
-            propValues = new ConcurrentDictionary<EntityMemberSign, object>();
 
-        IEnumerable<PropertyInfo> properties = source.GetSourceProperties(signs);
-       
-        properties.AsParallel().ForAll(prop =>
-        {
-            EntityMemberSign mSign = 
-                Enum.Parse<EntityMemberSign>(prop.Name);
 
-            object pValue = prop.GetValue(source)!;
-
-            propValues.TryAdd(mSign, pValue);
-        });
-
-        return propValues;
-    }
 
 
 
 
     internal static IEnumerable<PropertyInfo> GetResultProperties<TResult>(this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
-        //IEnumerable<string> signsStrings = propertiesSignsFilter.Select(s => s.ToString());
+        //IEnumerable<string> signsStrings = propertiesSignsFilter.SelectExp(s => s.ToString());
 
         IEnumerable<PropertyInfo> properties = result.GetInterfaceProperties<EntityAttr>();
 
@@ -63,9 +46,10 @@ internal static class SelectorHelper
 
     }
 
+    [Obsolete("Review its usefulness")]
     internal static IEnumerable<PropertyInfo> GetResultPropertiesParallel<TResult>(this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
-        //IEnumerable<string> signsStrings = propertiesSignsFilter.Select(s => s.ToString());
+        //IEnumerable<string> signsStrings = propertiesSignsFilter.SelectExp(s => s.ToString());
 
         IEnumerable<PropertyInfo> properties = result.GetInterfacePropertiesParallel<EntityAttr>();
 
@@ -75,16 +59,8 @@ internal static class SelectorHelper
 
     }
 
-    //internal static IEnumerable<PropertyInfo> GetResultProperties<TResult>(this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
-    //{
-    //    IEnumerable<string> signsStrings = propertiesSignsFilter.Select(s => s.ToString());
 
-    //    IEnumerable<PropertyInfo> properties = result.GetInterfaceProperties<EntityAttr>()
-    //        .Where(p => propertiesSignsFilter.Contains(p.GetCustomAttribute<EntityAttr>().Sign));
-
-    //    return properties;
-    //}
-
+    [Obsolete("Review its usefulness")]
     internal static IEnumerable<PropertyInfo> GetSelectionProperties<TSource>(params EntityMemberSign[] selectSigns)
     {
         IEnumerable<PropertyInfo> properties =
@@ -103,9 +79,9 @@ internal static class SelectorHelper
     }
 
 
-    internal static IEnumerable<EntityMemberSign> GetSelectionSigns<TEntity>() where TEntity : class
+    internal static IEnumerable<EntityMemberSign> GetEntitySigns<TEntity>() where TEntity : class
     {
-        IEnumerable<PropertyInfo> properties = typeof(TEntity).GetInterfaceProperties<EntityAttr>();
+        IEnumerable<PropertyInfo> properties = typeof(TEntity).GetPropertiesWith<EntityAttr>();
 
         if (properties.NullOrEmpty()) yield break;
 

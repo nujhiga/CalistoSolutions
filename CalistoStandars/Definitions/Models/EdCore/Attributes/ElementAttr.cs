@@ -23,11 +23,3 @@ public class ElementAttr : Attribute
         MarkerRef = marketRef;
     }
 }
-
-[AttributeUsage(AttributeTargets.Property)]
-public sealed class DbParamAttr : ElementAttr
-{
-    public readonly Type ParamValueType;
-    public DbParamAttr(Type paramValueType) : 
-        base(ElementType.Parameter) => ParamValueType = paramValueType;
-}

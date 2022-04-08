@@ -7,7 +7,7 @@ namespace CalistoStandars.Definitions.Interfaces.DbCore.Persons;
 public interface IPersonBase : IEquatable<IPersonBase>, IComparable<IPersonBase>, IReferenceable
 {
     object? PersonID { get; }
-    PersonEntity? PersonEntity { get; set; }
+    PersonEntitySign? PersonEntity { get; set; }
 
     [ElementAttr(ElementType.Serializable)]
     ICampusUser? CampusUser { get; set; }

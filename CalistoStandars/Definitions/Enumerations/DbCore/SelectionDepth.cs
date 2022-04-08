@@ -1,5 +1,7 @@
 ﻿namespace CalistoStandars.Definitions.Enumerations;
 
+[Obsolete("Review its usefulness")]
+
 public enum SelectionDepth
 {
     None,

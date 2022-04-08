@@ -3,18 +3,12 @@
 public abstract class Message : Element<MessageSign>, IMessage, IDisposable //where T : Enum
 {
     private bool _disposed;
-
-
-    //protected Message(MessageSign sign) : base(sign, Enumerations.ElementType.Message)
-    //{
-    //}
-
+    
     protected Message(MessageSign sign, bool isInvalid, ElementType type) : base(sign, type)
     {
         IsInvalid = isInvalid;
     }
     
-   // public BodyContentPattern Content { get; set; }
     public ClResult ClResult { get; set; }
     public KeyReference? KeyID { get; set; }
     public int MessageID { get; set; }

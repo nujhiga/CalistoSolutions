@@ -1,20 +1,23 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 
 namespace CalistoDbCore.Expressions.Builders;
 
+public record ExpressionPackage(ConstantExpression Constant, ParameterExpression Param, MemberExpression Value);
+public record LambdaExpressionPackage(Expression MainExpression, ParameterExpression Param);
 
 public static class ExpressionFactory<TEntity> where TEntity : class, IEntity
 {
     private const string ParamMarker = "p";
 
 
-    public record ExpressionPackage(ConstantExpression Constant, ParameterExpression Param, MemberExpression Value);
     public static MethodInfo? GetContainsMethod<TValue>() => typeof(ICollection<TValue>).GetMethod(nameof(Enumerable.Contains), new[] { typeof(TValue) });
+    
+    [Obsolete("I think that this one is not working at all")]
     public static MethodInfo? GetNullableContainsMethod<TValue>() => typeof(ICollection<TValue>).GetMethod(nameof(Enumerable.Contains), new[] { typeof(TValue?) });
+   
     public static MemberExpression GetProperty(Expression param, string target) => Expression.PropertyOrField(param, target);
     public static MemberExpression GetProperty(ParameterExpression param, PropertyInfo pinfo) => Expression.Property(param, pinfo);
     public static MemberAssignment GetBind(MemberInfo minfo, Expression expression) => Expression.Bind(minfo, expression);
@@ -23,6 +26,7 @@ public static class ExpressionFactory<TEntity> where TEntity : class, IEntity
     public static ParameterExpression GetParameter() => Expression.Parameter(typeof(TEntity), ParamMarker);
     public static ConstantExpression GetConstant(object source) => Expression.Constant(source);
     public static ConstantExpression GetNullableConstant<TValue>(object source) => Expression.Constant(source, typeof(TValue?));
+    
     public static ExpressionPackage GetPackage(object constSource, string target)
     {
         var constant = GetConstant(constSource);

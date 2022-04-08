@@ -19,11 +19,11 @@ public class Person : PersonBase, IPerson
     {
     }
 
-    public Person(object? personID, PersonEntity? personEntity) : base(personID, personEntity)
+    public Person(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)
     {
     }
 
-    public Person(object? personID, PersonEntity? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
+    public Person(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
     {
     }
 }

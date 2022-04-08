@@ -18,7 +18,7 @@ public sealed class MessageSerializer : IDisposable
     public MessageSerializer(MessageSign? messageSign)
     {
         _messageSign = messageSign;
-
+       
         Initialize();
     }
 

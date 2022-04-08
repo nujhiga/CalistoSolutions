@@ -9,8 +9,6 @@ using CalistoStandars.Definitions.Enumerations.DbCore;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CalistoDbCore.Expressions.Builders;
 
@@ -22,7 +20,7 @@ internal interface IQueryBuilder<out TContext> where TContext : DbContext
     bool DbCanConnect { get; }
     bool DbWorking { get; }
     bool IsParameter { get; }
-    void SetParameter(DbRequestParameter parameter);
+    void SetParameter(ClDbParameter parameter);
     void SetParameter(DbRequestSign sign, params object[] values);
     void SetParameter(params object[] values);
     void SetCommandTimeOut(TimeSpan timeOut);
@@ -40,7 +38,7 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
     public bool DbCanConnect => Context.Database.CanConnect();
     public bool DbWorking => DbState is ConnectionState.Connecting or ConnectionState.Executing or ConnectionState.Fetching;
     public bool IsParameter => Parameter is not null;
-    
+
     protected Expression<Func<TEntity, TEntity>> Selector { get; set; }
 
     protected QueryBuilderBase(TContext context, CancellationToken cancellToken = default)
@@ -49,34 +47,33 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
         CancellToken = cancellToken;
     }
 
-    protected QueryBuilderBase(TContext context, DbRequestParameter parameter, CancellationToken cancellToken = default)
+    protected QueryBuilderBase(TContext context, ClDbParameter parameter, CancellationToken cancellToken = default)
     {
         Context = context;
         Parameter = parameter;
         CancellToken = cancellToken;
     }
 
-    internal abstract IQueryable<TEntity> GetQuery(DbRequestParameter parameter);
+    internal abstract IQueryable<TEntity> GetQuery(ClDbParameter parameter);
 
-    protected Expression<Func<TEntity, TEntity>> BuildSelector(params EntityMemberSign[] memberSigns) => Select(memberSigns);
-    
-    protected IQueryable<TEntity> BuildupQuery(IQueryable<TEntity> dataSourceQuery, params EntityMemberSign[] selectionSigns)
+    protected static Expression<Func<TEntity, TEntity>> BuildSelector(params EntityMemberSign[] memberSigns) =>
+        memberSigns.AsSelectExpression<TEntity>();
+
+    protected virtual IQueryable<TEntity> BuildQuery(IQueryable<TEntity> query, params EntityMemberSign[] selectionSigns)
     {
-        Expression[] expressions = GetDefaultExpressions();
-  
-        Selector = BuildSelector(selectionSigns);
+        Expression[] expressions = GetParameterAsExpressions();
 
-        IQueryable<TEntity> query = dataSourceQuery.
-            WithExpressions(expressions).
+        if (selectionSigns.Length == 0)
+            
+            Selector = BuildSelector(selectionSigns);
+
+        query = query.WhereExpressions(expressions).
             Select(Selector).AsNoTracking();
-        
+
         return query;
     }
 
-    public void SetParameter(DbRequestParameter parameter)
-    {
-        Parameter = parameter;
-    }
+    public void SetParameter(ClDbParameter parameter) => Parameter = parameter;
     public void SetParameter(DbRequestSign sign, params object[] values)
     {
         Parameter = Parameter.New(sign);
@@ -91,21 +88,11 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
             Parameter = Parameter.With(value);
     }
 
-    public virtual Expression[] GetDefaultExpressions()
-    {
-        var expressions = GetExpressions().Where(e => e is not null);
-
-        return expressions.ToArray();
-    }
-
-    public void SetCommandTimeOut(TimeSpan timeOut)
-    {
-        Context.Database.SetCommandTimeout(timeOut);
-    }
-    public void SetCommandTimeOut(int timeOut)
-    {
-        Context.Database.SetCommandTimeout(timeOut);
-    }
+    public virtual Expression[] GetParameterAsExpressions() => GetExpressions().Where(e => e is not null).ToArray();
+    public void SetCommandTimeOut(TimeSpan timeOut) => Context.Database.SetCommandTimeout(timeOut);
+    public void SetCommandTimeOut(int timeOut) => Context.Database.SetCommandTimeout(timeOut);
+    
+    #region IDisposable Pattern
 
     private void Dispose(bool disposing)
     {
@@ -127,6 +114,8 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    #endregion
 }
 
 internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FContext> where TEntity : class, IEntity
@@ -135,7 +124,7 @@ internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FCon
     {
     }
 
-    internal override IQueryable<TEntity> GetQuery(DbRequestParameter parameter)
+    internal override IQueryable<TEntity> GetQuery(ClDbParameter parameter)
     {
 
         SetParameter(parameter);
@@ -153,14 +142,14 @@ internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FCon
 
     private IQueryable<TEntity> GetNominalQuery()
     {
-        IQueryable<TEntity> query = BuildupQuery(Context.Set<TEntity>(), 
+        IQueryable<TEntity> query = BuildQuery(Context.Set<TEntity>(),
             EntityMemberSignFactory.GetCompleteNominal);
-        
+
         return query;
     }
 
 
-    
+
 
 
 

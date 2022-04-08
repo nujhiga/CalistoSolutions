@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
+
 using CalistoDbCore.Expressions.Builders;
 using CalistoDbCore.Expressions.Enumerations;
-using CalistoDbCore.U3FEntities;
 
 using CalistoStandars.Definitions.Enumerations;
 using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
@@ -33,126 +33,52 @@ public enum DbRequestSign
 
 public static class DbRequestParameterExtensions
 {
-    //public static DbRequestParameter<TSign> With<TSign>(this DbRequestParameter<TSign> requestParam, TSign value) where TSign : Enum
+    //public static ClDbParameter<TSign> With<TSign>(this ClDbParameter<TSign> param, TSign value) where TSign : Enum
     //{
-    //    requestParam.RequestSign = value;
-    //    return requestParam;
+    //    param.RequestSign = value;
+    //    return param;
     //}
 
-    public static DbRequestParameter New(this DbRequestParameter requestParam, DbRequestSign value)
+    public static ClDbParameter New(this ClDbParameter param, DbRequestSign value)
     {
-        requestParam = new DbRequestParameter(value);
+        param = new ClDbParameter(value);
 
-        return requestParam;
+        return param;
     }
 
 
-    public static DbRequestParameter With(this DbRequestParameter requestParam, object value)
+    public static ClDbParameter With(this ClDbParameter param, object value)
     {
-        if (value is null) return requestParam;
+        if (value is null) return param;
 
         Type type = value.GetType();
 
         if (type == typeof(DbRegularity))
         {
-            requestParam.Regularity = (DbRegularity)value;
-            //return requestParam;
+            param.Regularity = (DbRegularity)value;
         }
         else if (type == typeof(ClCampus))
         {
-            requestParam.Campus = (ClCampus)value;
-            //return requestParam;
+            param.Campus = (ClCampus)value;
         }
         else if (type == typeof(int?[]))
         {
-            requestParam.AcademicIDs = (int?[])value;
-            //return requestParam;
+            param.AcademicIDs = (int?[])value;
         }
         else if (type == typeof(double[]))
         {
-            requestParam.UsersIDs = (double[])value!;
-            //return requestParam;
+            param.UsersIDs = (double[])value!;
         }
         else if (type == typeof(Period[]))
         {
-            requestParam.Periods = (Period[])value!;
-            //return requestParam;
+            param.Periods = (Period[])value!;
         }
         
-        return requestParam;
+        return param;
     }
   
 }
 
-public sealed class DbRequestParameter : IDisposable
-{
-    public DbRequestSign RequestSign { get; set; }
-
-
-    [DbParamAttr(typeof(ClCampus?))]
-    public ClCampus? Campus { get; set; }
-    public bool UseCampus => Campus is { };
-
-
-    [DbParamAttr(typeof(DbRegularity?))]
-    public DbRegularity? Regularity { get; set; }
-    public bool UseRegularity => Regularity is { };
-    
-
-    [DbParamAttr(typeof(int?[]))]
-    public int?[]? AcademicIDs { get; set; }
-    public bool UseAcademicIDs => AcademicIDs is { Length: > 0 };
-
-
-    [DbParamAttr(typeof(double[]))]
-    public double[]? UsersIDs { get; set; }
-    public bool UseUsersIDs => UsersIDs is { Length: > 0 };
-
-
-    [DbParamAttr(typeof(Period[]))]
-    public Period[]? Periods { get; set; }
-    public bool UsePeriods => Periods is { Length: > 0 };
-    
-    public DbRequestParameter(in DbRequestSign sign) => RequestSign = sign;
-
-    public void Dispose()
-    {
-        if (UseAcademicIDs)
-            Array.Clear(AcademicIDs!, 0, AcademicIDs!.Length);
-
-        if (UseUsersIDs)
-            Array.Clear(UsersIDs!, 0, UsersIDs!.Length);
-
-        if (UsePeriods)
-            Array.Clear(Periods!, 0, Periods!.Length);
-    }
-
-    /*
-    public DbRequestParameter(in TSign sign, in ClCampus fromCampus, Period[] onPeriods)
-    {
-        FromCampus = fromCampus;
-        OnPeriods = onPeriods;
-        RequestSign = sign;
-    }
-
-    public void Dispose()
-    {
-
-        if (WithAcademicID is { })
-            Array.Clear(WithAcademicID, 0, WithAcademicID.Length);
-
-        if (WithUsers is { })
-            Array.Clear(WithUsers, 0, WithUsers.Length);
-
-        if (OnPeriods is { })
-            Array.Clear(OnPeriods, 0, OnPeriods.Length);
-
-        if (SelectionSigns is { })
-            Array.Clear(SelectionSigns, 0, SelectionSigns.Length);
-
-    }*/
-
-}
 
 public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerable<IEntity>>
 {
@@ -160,16 +86,11 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
     public CancellationToken Cancellation { get; }
 
     private readonly CacheHandler<DbRequestSign> _cacheControl;
-
-    // public DbRequestParameter<DbRequestSign> RequestParam { get; set; }
-
+    
     public DbRepository(CampusTarget campus, Period[] periods)
     {
         Cancellation = new CancellationToken();
         _cacheControl = new CacheHandler<DbRequestSign>(CleanCacheRequest);
-
-        // RequestParam = new DbRequestParameter<DbRequestSign>(DbRequestSign.GetSyncCareers, campus.Source, ref periods);
-
     }
 
 
@@ -190,7 +111,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
 
         using MrQueryBuilder<TEntity> builder = new MrQueryBuilder<TEntity>();
 
-        DbRequestParameter parameter = new DbRequestParameter(dataRequestType);
+        ClDbParameter parameter = new ClDbParameter(dataRequestType);
         parameter = parameter.With(ClCampus.U3F).With(new Period[]{new(20221)});
 
         IQueryable<TEntity> query = builder.GetQuery(parameter);
@@ -326,7 +247,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         if (UsingPeriods == null)
             UsingPeriods = new Periods(period);
 
-        if (UsingPeriods.Contains(period))
+        if (UsingPeriods.ContainsExp(period))
             return false;
 
         UsingPeriods.Add(period);
@@ -338,7 +259,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         if (UsingPeriods == null)
             UsingPeriods = new Periods(period);
 
-        if (UsingPeriods.Contains(period))
+        if (UsingPeriods.ContainsExp(period))
             return false;
 
         UsingPeriods.Add(period);
@@ -350,7 +271,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         if (UsingPeriods == null)
             UsingPeriods = new Periods(period);
 
-        if (UsingPeriods.Contains(period))
+        if (UsingPeriods.ContainsExp(period))
             return false;
 
         UsingPeriods.Add(period);
@@ -362,7 +283,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
     {
         if (UsingCareers is null) UsingCareers = new();
 
-        if (UsingCareers.Contains(career)) return false;
+        if (UsingCareers.ContainsExp(career)) return false;
 
         UsingCareers.Add(career);
         return true;
@@ -372,7 +293,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
     {
         if (UsingCommissions is null) UsingCommissions = new();
 
-        if (UsingCommissions.Contains(commission)) return false;
+        if (UsingCommissions.ContainsExp(commission)) return false;
 
         UsingCommissions.Add(commission);
         return true;
@@ -382,7 +303,7 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
     {
         if (UsingUsers is null) UsingUsers = new();
 
-        if (UsingUsers.Contains(user)) return false;
+        if (UsingUsers.ContainsExp(user)) return false;
 
         UsingUsers.Add(user);
 

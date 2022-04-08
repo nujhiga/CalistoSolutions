@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using System.Reflection;
+
 using CalistoDbCore.Expressions.BuildingOptions.Factory;
 using CalistoDbCore.Expressions.BuildingOptions.OptionsModels;
 using CalistoDbCore.Expressions.Enumerations;
@@ -15,10 +15,10 @@ using CalistoStandars.Definitions.Structures;
 
 namespace CalistoDbCore.Expressions.Builders;
 
-internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEntity> where TEntity : class, IEntity
+internal abstract class ExpressionBuilder<TEntity> where TEntity : class, IEntity //: BinaryExpressionBuilder<TEntity> where TEntity : class, IEntity
 {
-    public DbRequestParameter Parameter { get; set; }
-    
+    public ClDbParameter Parameter { get; set; }
+
     [Obsolete]
     protected IEnumerable<Expression> GetSyncExpressions()
     {
@@ -42,7 +42,7 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
         if (rExpression is not null)
             yield return rExpression;
     }
-    
+
     protected IEnumerable<Expression> GetExpressions()
     {
         IEnumerable<DbParamAttr> attributes =
@@ -50,37 +50,61 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
 
         foreach (DbParamAttr attr in attributes)
         {
-            if (attr.ParamValueType == typeof(Period[]))
+            if (attr.ParamType is DbParameterType.Period)
                 yield return GetPeriodExpression();
 
-            if (attr.ParamValueType == typeof(ClCampus?))
+            if (attr.ParamType is DbParameterType.Campus)
                 yield return GetCampusExpression();
 
-            if (attr.ParamValueType == typeof(int?[]))
+            if (attr.ParamType is DbParameterType.Academics)
                 yield return GetAcademicExpression();
 
-            if (attr.ParamValueType == typeof(double[]))
+            if (attr.ParamType is DbParameterType.Users)
                 yield return GetUserExpression();
 
-            if (attr.ParamValueType == typeof(DbRegularity?))
+            if (attr.ParamType is DbParameterType.Regularity)
                 yield return GetRegularityExpression();
         }
     }
 
-    protected Expression GetExpression<TValue>(EntityMemberSign sign, TValue constValue, ExpressionType expType, bool isNullable = true)
-    {
-        ExpressionOption<TValue> buildOpt = new ExpressionOption<TValue>($"{sign}", constValue, expType, isNullable);
-        _ = TryBuild(buildOpt, out Expression expression);
 
-        return expression;
+    //protected Expression BuildExpression<TValue>(EntityMemberSign sign, TValue constValue, ExpressionType expType, bool isNullable = true)
+    //{
+    //    ExpressionOption<TValue> buildOpt = new ExpressionOption<TValue>($"{sign}", constValue, expType, isNullable);
+    //    _ = TryBuild(buildOpt, out Expression expression);
+
+    //    return expression;
+    //}
+
+
+
+    private static bool TryBuild<TSign, TValue>(in ExpressionOption<TSign, TValue> buildOpt, out Expression expression) where TSign : struct, Enum
+    {
+        expression = null!;
+
+        if (!buildOpt.IsValid) return false;
+
+        (TSign sign, TValue value, ExpressionType xType, bool nullable) =
+            (buildOpt.FieldSign, buildOpt.ConstValue,
+                buildOpt.ExpressionType, buildOpt.Nullable);
+
+        expression = xType switch
+        {
+            ExpressionType.Equal or ExpressionType.NotEqual =>
+                value!.AsEqualityExpression<TEntity, TSign>(sign, xType, nullable),
+
+            ExpressionType.OnesComplement =>
+                value!.AsContainsExpression<TEntity, TSign>(sign),
+
+            _ => null!
+        };
+
+        return expression is not null;
     }
-    
-    
-    
-    
-    
-    
-    private bool TryBuild<TValue>(in ExpressionOption<TValue> buildOpt, out Expression expression)
+
+    /*
+    private bool TryBuild<TSign, TValue>(in ExpressionOption<TSign, TValue> buildOpt, out Expression expression) 
+        where TSign : struct, Enum
     {
         expression = null!;
 
@@ -91,20 +115,36 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
 
         expression = buildOpt.ExpressionType switch
         {
-            ExpressionType.Equal when !nullable => Equal(fieldName, constVal),
-            ExpressionType.Equal when nullable => NullableEqual(fieldName, constVal),
+            ExpressionType.Equal when !nullable => constVal.AsEqualsExpression<TEntity>(), //EqualExp2(fieldName, constVal),
+            ExpressionType.Equal when nullable => NullableEqualExp(fieldName, constVal),
 
-            ExpressionType.NotEqual when !nullable => NotEqual(fieldName, constVal),
-            ExpressionType.NotEqual when nullable => NullableNotEqual(fieldName, constVal),
+            ExpressionType.NotEqual when !nullable => NotEqualExp(fieldName, constVal),
+            ExpressionType.NotEqual when nullable => NullableNotEqualExp(fieldName, constVal),
 
             ExpressionType.OnesComplement when !buildOpt.AsArray().NullOrEmpty() =>
-                Contains(fieldName, buildOpt.AsArray().NullOrEmpty()),
+                ContainsExp(fieldName, buildOpt.AsArray().NullOrEmpty()),
 
             _ => null!
         };
 
         return expression != null;
     }
+    */
+
+    private static bool TryBuild<TSign, TValue>(
+        in ExpressionOption<TSign, TValue> buildOptx,
+        in ExpressionOption<TSign, TValue> buildOpty,
+        out Expression expression) where TSign : struct, Enum
+    {
+        object[] xValues = { buildOptx.ConstValue!, buildOpty.ConstValue! };
+
+        expression = xValues.AsAndAlsoExpression<TEntity, TSign, TSign>
+            (buildOptx.FieldSign, buildOpty.FieldSign);
+
+        return expression is not null;
+    }
+
+    /*
     private bool TryBuild<TValue>(in ExpressionOption<TValue> xbuildOpt, in ExpressionOption<TValue> ybuildOpt, out Expression expression)
     {
         expression = And(xbuildOpt.FieldName, xbuildOpt.ConstValue,
@@ -112,10 +152,39 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
 
         return expression != null;
     }
+    */
     protected Expression GetRegularityExpression()
     {
-        Expression rExpression = null!;
+        Expression rExpression;
 
+        if (!Parameter.UsingRegularity) return null!;
+
+        DbRegularity regularity = Parameter.Regularity!.Member;
+        string regularityValue = regularity.GetRegularityValue();
+
+        if (regularity is DbRegularity.Ingress)
+        {
+            string regular = regularityValue[..1];
+            string curing = regularityValue[1..1];
+
+            ExpressionOption<DbRegularity, string> optionx =
+                OptionFactory.WithOption(DbRegularity.Regular, regular);
+
+            ExpressionOption<DbRegularity, string> optiony =
+                OptionFactory.WithOption(DbRegularity.Curing, curing);
+
+            _ = TryBuild(optionx, optiony, out rExpression);
+        }
+        else
+        {
+            ExpressionOption<DbRegularity, string> option =
+                OptionFactory.WithOption(DbRegularity.Regular, regularityValue);
+
+            _ = TryBuild(option, out rExpression);
+        }
+
+
+        /*
         if (!Parameter.UseRegularity) return null!;
 
         ExpressionOption<string> optionx;
@@ -131,6 +200,7 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
             ExpressionOption<string> optiony = OptionFactory.WithOption(DbRegularity.Ingress, nameof(ConsoleKey.T));
             _ = TryBuild(optionx, optiony, out rExpression);
         }
+        */
 
         return rExpression;
     }
@@ -138,6 +208,25 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
     {
         Expression uExpression;
 
+        if (!Parameter.UsingUsers) return null!;
+
+        if (!Parameter.UsersIDs!.IsArray)
+        {
+            ExpressionOption<DbAcademics, double> option = OptionFactory.
+                WithOption(DbAcademics.Legajo, Parameter.UsersIDs.Member![0]);
+
+            _ = TryBuild(option, out uExpression);
+        }
+        else
+        {
+            ExpressionOption<DbAcademics, double[]> option = OptionFactory.
+                WithOption(DbAcademics.Legajo, Parameter.UsersIDs.Member!,
+                    ExpressionType.OnesComplement);
+
+            _ = TryBuild(option, out uExpression);
+        }
+
+        /*
         if (!Parameter.UseUsersIDs) return null!;
 
         if (Parameter.UsersIDs!.Length == 1)
@@ -154,6 +243,7 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
 
             _ = TryBuild(option, out uExpression);
         }
+        */
 
         return uExpression;
     }
@@ -161,6 +251,28 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
     {
         Expression aExpression;
 
+        if (!Parameter.UsingAcademics) return null!;
+
+        DbAcademics dbAcademics = Parameter.RequestSign.GetDbAcademic();
+
+        if (!Parameter.AcademicsIDs!.IsArray)
+        {
+            ExpressionOption<DbAcademics, int?> option = OptionFactory.
+                WithOption(dbAcademics, Parameter.AcademicsIDs.Member![0]);
+
+            _ = TryBuild(option, out aExpression);
+
+        }
+        else
+        {
+            ExpressionOption<DbAcademics, int?[]> option = OptionFactory.
+                WithOption(dbAcademics, Parameter.AcademicsIDs.Member!,
+                    ExpressionType.OnesComplement);
+
+            _ = TryBuild(option, out aExpression);
+        }
+
+        /*
         if (!Parameter.UseAcademicIDs) return null!;
 
         Enum dbEnumSign = Parameter.RequestSign.GetEnumSign();
@@ -179,6 +291,8 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
 
             _ = TryBuild(option, out aExpression);
         }
+        */
+
 
         return aExpression;
     }
@@ -186,7 +300,29 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
     {
         Expression cExpression;
 
-        if (!Parameter.UseCampus) return null!;
+        if (!Parameter.UsingCampus) return null!;
+
+        DbCampus dbCampus = Parameter.RequestSign.GetDbCampus();
+
+        if (dbCampus is DbCampus.ConvCod)
+        {
+            int? aux = 119;
+
+            ExpressionOption<DbCampus, int?> option = OptionFactory.
+                WithOption(dbCampus, aux);
+
+            _ = TryBuild(option, out cExpression);
+        }
+        else
+        {
+            ExpressionOption<DbCampus, ClCampus> option = OptionFactory.
+                WithOption(dbCampus, Parameter.Campus!.Member);
+
+            _ = TryBuild(option, out cExpression);
+        }
+
+        /*
+        if (!Parameter.Campus2.UsingThis) return null!;
 
         DbCampus dbCampus = Parameter.RequestSign.GetDbCampus();
 
@@ -203,7 +339,8 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
                 WithCampus(Parameter.Campus!.Value);
 
             _ = TryBuild(option, out cExpression);
-        }
+        }*/
+
 
         return cExpression;
     }
@@ -211,27 +348,40 @@ internal abstract class ExpressionBuilder<TEntity> : BinaryExpressionBuilder<TEn
     {
         Expression pExpression;
 
-        if (!Parameter.UsePeriods) return null!;
+        if (!Parameter.UsingPeriods) return null!;
 
         DbPeriod dbPeriod = Parameter.RequestSign.GetDbPeriod();
 
-        if (Parameter.Periods!.Length == 1)
+        if (!Parameter.Periods!.IsArray)
         {
-            ExpressionOption<string> option = OptionFactory.
-                WithPeriod(dbPeriod, Parameter.Periods![0]);
+            ExpressionOption<DbPeriod, Period> option = OptionFactory.
+                WithOption(dbPeriod, Parameter.Periods.Member![0]);
 
             _ = TryBuild(option, out pExpression);
         }
         else
         {
-            ExpressionOption<string[]> option = OptionFactory.
-                WithPeriods(dbPeriod, Parameter.Periods!);
+            ExpressionOption<DbPeriod, Period[]> option = OptionFactory.
+                WithOption(dbPeriod, Parameter.Periods.Member!,
+                    ExpressionType.OnesComplement);
 
             _ = TryBuild(option, out pExpression);
         }
 
         return pExpression;
     }
+
+    //protected Expression GetClParamExpression(DbParameterType paramType)
+    //{
+    //    var whereParam = new Func<PropertyInfo, bool>(p =>
+    //        p.GetCustomAttribute<DbParamAttr>()!.ParamType == paramType);
+
+    //    var paramInfoMember = Parameter.GetPropertiesWith<DbParamAttr>(whereParam).Single();
+
+
+    //}
+
+
 }
 
 

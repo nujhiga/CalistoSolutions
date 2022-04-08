@@ -6,7 +6,8 @@ public enum DbRegularity
     Regular,
     Ingress,
     Disabled,
-    Licence
+    Licence,
+    Curing
 }
 
 

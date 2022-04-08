@@ -12,8 +12,8 @@ public static class ReflectionExtensions
 
         return interfaceType;
     }
-    [Obsolete]
 
+    [Obsolete]
     public static Type GetInterfaceType(this object? source)
     {
         Type baseType = source!.GetType();
@@ -26,8 +26,8 @@ public static class ReflectionExtensions
 
         return interfaceType;
     }
-    [Obsolete]
 
+    [Obsolete]
     public static Type GetInterfaceType<TType>()
     {
         Type baseType = typeof(TType);
@@ -41,30 +41,15 @@ public static class ReflectionExtensions
         return interfaceType;
     }
 
-
-    /*
-    public static Type GetInterfaceType(this Type baseType)
-    {
-        if (baseType.IsInterface) return baseType;
-
-        string interfaceName = $"I{baseType.Name}";
-
-        Type interfaceType = baseType.GetInterface(interfaceName)!;
-
-        return interfaceType;
-    }
-    */
-
     [Obsolete]
-
     public static IEnumerable<PropertyInfo> GetInterfaceProperties(this object? source)
     {
         Type interType = source.GetInterfaceType();
 
         return interType is null ? null! : interType.GetProperties()!;
     }
+   
     [Obsolete]
-
     public static IEnumerable<PropertyInfo> GetInterfacePropertiesParallel<TAttr>(this object? source) where TAttr : Attribute
     {
         Type interType = source.GetInterfaceType();
@@ -72,8 +57,8 @@ public static class ReflectionExtensions
         return interType is null ? null! : interType.GetProperties().
             Where(p => Attribute.IsDefined(p, typeof(TAttr))).AsParallel()!;
     }
-    [Obsolete]
 
+    [Obsolete]
     public static IEnumerable<PropertyInfo> GetInterfaceProperties<TAttr>(this object? source) where TAttr : Attribute
     {
         Type interType = source.GetInterfaceType();
@@ -83,7 +68,6 @@ public static class ReflectionExtensions
     }
 
     [Obsolete]
-
     public static IEnumerable<PropertyInfo> GetInterfaceProperties<TAttr>(this Type baseType) where TAttr : Attribute
     {
         Type interType = baseType.GetInterfaceType();
@@ -110,22 +94,33 @@ public static class ReflectionExtensions
             Attribute.IsDefined(p, typeof(TAttr))).AsParallel()!;
     }
 
+
+    public static IEnumerable<PropertyInfo> GetPropertiesWith<TAttr, TType>(Func<PropertyInfo, bool> where = null!) where TAttr : Attribute
+    {
+        var (type, _) = typeof(TType).GetTypeDetails();
+
+        IEnumerable<PropertyInfo> properties =
+            type.GetPropertiesWith<TAttr>();
+
+        return where is null ? properties : properties.Where(where);
+    }
+
     public static IEnumerable<PropertyInfo> GetPropertiesWith<TAttr>
         (this object source, Func<PropertyInfo, bool> where = null!) where TAttr : Attribute
     {
-        var details = source.GetTypeDetails();
+        var (type, _) = source.GetTypeDetails();
 
         IEnumerable<PropertyInfo> properties = 
-            details.type.GetPropertiesWith<TAttr>();
+            type.GetPropertiesWith<TAttr>();
 
         return where is null ? properties : properties.Where(where);
     }
 
     public static IEnumerable<TAttr> GetAttributesWith<TAttr>(this object source, Func<TAttr, bool> where = null!) where TAttr : Attribute
     {
-        var details = source.GetTypeDetails();
+        var (type, _) = source.GetTypeDetails();
         
-        IEnumerable<TAttr> attributes = from pinfo in details.type.GetPropertiesWith<TAttr>() 
+        IEnumerable<TAttr> attributes = from pinfo in type.GetPropertiesWith<TAttr>() 
             select pinfo.GetCustomAttribute<TAttr>();
 
         return where is null ? attributes : attributes.Where(where);

@@ -1,30 +1,35 @@
 ﻿using System.Linq.Expressions;
 
 using CalistoDbCore.Expressions.BuildingOptions.OptionsModels;
-using CalistoDbCore.Expressions.Enumerations;
-
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Models.DbCore.Entities.Constants;
-using CalistoStandars.Definitions.Structures;
 
 namespace CalistoDbCore.Expressions.BuildingOptions.Factory;
 public static class OptionFactory
 {
-    public static ExpressionOption<TValue> WithOption<TValue, TSign>(TSign signField, TValue constValue, ExpressionType expType = ExpressionType.Equal)
+
+    public static ExpressionOption<TSign, TValue> WithOption<TSign, TValue>(TSign fieldSign, TValue constValue,
+        ExpressionType expType = ExpressionType.Equal) where TSign : struct, Enum
     {
-        return new ExpressionOption<TValue>($"{signField}", constValue, expType);
+        return new ExpressionOption<TSign, TValue>(fieldSign, constValue, expType);
     }
 
-    public static ExpressionOption<TValue> WithOption<TValue>(Enum signEnum, TValue constValue, ExpressionType expType = ExpressionType.Equal)
-    {
-        return new ExpressionOption<TValue>($"{signEnum}", constValue, expType);
-    }
 
-    public static ExpressionOption<TValue[]> WithOptions<TValue, TSign>(TSign signField, TValue[] constValue)
-    {
-        return new ExpressionOption<TValue[]>($"{signField}", constValue, ExpressionType.OnesComplement);
-    }
+    //public static ExpressionOption<TValue, TSign> WithOption<TValue, TSign>(TSign fieldSign, TValue constValue, 
+    //    ExpressionType expType = ExpressionType.Equal) where TSign : struct, Enum
+    //{
+    //    return new ExpressionOption<TValue, TSign>(fieldSign, constValue, expType);
+    //}
 
+    //public static ExpressionOption<TValue> WithOption<TValue>(Enum signEnum, TValue constValue, ExpressionType expType = ExpressionType.Equal)
+    //{
+    //    return new ExpressionOption<TValue>($"{signEnum}", constValue, expType);
+    //}
+
+    //public static ExpressionOption<TValue[], TSign> WithOptions<TValue, TSign>(TSign fieldSign, TValue[] constValue) where TSign : struct, Enum
+    //{
+    //    return new ExpressionOption<TValue[], TSign>(fieldSign, constValue, ExpressionType.OnesComplement);
+    //}
+
+    /*
     public static ExpressionOption<TValue[]> WithOptions<TValue>(Enum signEnum, TValue[] constValue)
     {
         return new ExpressionOption<TValue[]>($"{signEnum}", constValue, ExpressionType.OnesComplement);
@@ -65,4 +70,6 @@ public static class OptionFactory
 
         return option;
     }
+
+    */
 }

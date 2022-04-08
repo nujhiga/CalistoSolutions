@@ -2,6 +2,8 @@
 
 namespace CalistoStandars.Definitions.Extensions;
 
+//todo: 7422#2 - review reflection methods
+
 public static class MessagesExtensions
 {
     public static bool IsMassiveRequest(this MessageSign messageSign) =>

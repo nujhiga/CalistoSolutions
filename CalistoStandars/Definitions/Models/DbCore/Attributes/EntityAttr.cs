@@ -2,6 +2,8 @@
 
 namespace CalistoStandars.Definitions.Models.DbCore.Attributes;
 
+[Obsolete("Review its usefulness")]
+
 [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
 public sealed class EntityClrAttr : Attribute
 {

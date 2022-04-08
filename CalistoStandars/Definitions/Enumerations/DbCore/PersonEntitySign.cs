@@ -1,6 +1,7 @@
 ﻿namespace CalistoStandars.Definitions.Enumerations;
 
-public enum PersonEntity
+[Obsolete("Review its usefulness")]
+public enum PersonEntitySign
 {
     None,
     Student,

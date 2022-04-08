@@ -58,7 +58,7 @@ internal sealed class MessageBuilder
         
         using MessageSerializer serializer = new MessageSerializer(sign);
 
-        string serializedXml = null;
+        string serializedXml = null!;
 
         if (!IsMassiveRequest(in source, sign))
         {

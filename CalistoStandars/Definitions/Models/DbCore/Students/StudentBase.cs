@@ -13,11 +13,11 @@ public abstract class StudentBase : PersonBase, IStudentBase
     protected StudentBase(object? personID) : base(personID)
     {
     }
-    protected StudentBase(object? personID, PersonEntity? personEntity) : base(personID, personEntity)
+    protected StudentBase(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)
     {
         
     }
-    protected StudentBase(object? personID, PersonEntity? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
+    protected StudentBase(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
     {
     }
     
@@ -29,9 +29,10 @@ public abstract class StudentBase : PersonBase, IStudentBase
 
         if (CareersInfo is {Count: > 0})
             careerinfo = CareersInfo.FirstOrDefault(c => c.CareerID == careerid)!;
-
+        
         return careerinfo;
     }
+
     public IEnumerable<ICareerInfo> GetCareersInfo(params int?[] careerids)
     {
         if (CareersInfo is not { Count: > 0 }) yield break;
