@@ -1,14 +1,15 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Users;
+﻿using CalistoStandards.Definitions.Interfaces.Cls;
+using CalistoStandards.Definitions.Interfaces.DbCore.Users;
 
-namespace CalistoStandars.Definitions.Interfaces.DbCore.Persons;
+namespace CalistoStandards.Definitions.Interfaces.DbCore.Persons;
 
 
-[ElementAttr(ElementType.Serializable)]
+[ElementAttr(ClElementType.Serializable)]
 public interface IPersonBase : IEquatable<IPersonBase>, IComparable<IPersonBase>, IReferenceable
 {
     object? PersonID { get; }
-    PersonEntitySign? PersonEntity { get; set; }
+    // PersonEntitySign? PersonEntity { get; set; }
 
-    [ElementAttr(ElementType.Serializable)]
+    [ElementAttr(ClElementType.Serializable)]
     ICampusUser? CampusUser { get; set; }
 }

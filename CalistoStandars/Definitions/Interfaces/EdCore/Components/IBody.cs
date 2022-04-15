@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Interfaces;
+﻿namespace CalistoStandards.Definitions.Interfaces.EdCore.Components;
 
 /// <summary>
 ///     Common Interface for Body result of ISerializable object that will be the content of an Message
@@ -6,7 +6,7 @@
 /// </summary>
 public interface IBody : IElement<BodySign>, IDisposable
 {
-    BodyContentPattern ContentPattern { get; }
+    ClMessagePattern ContentPattern { get; }
 
     bool IsInvalidBody { get; set; }
 }

@@ -1,4 +1,7 @@
-﻿namespace CalistoStandars.Definitions.Models;
+﻿using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+using CalistoStandards.Definitions.Models.EdCore.Components.Factories;
+
+namespace CalistoStandards.Definitions.Models.EdCore.Messages.MessageStructures;
 
 public class AssignGroupRequest : RequestStructure 
 {
@@ -12,7 +15,7 @@ public class AssignGroupRequest : RequestStructure
         const NodeSign nodeSign = NodeSign.usuario_grupo;
         
         IMember member = ComponentsFactory.CreateMember(memberSign);
-        
+
         MemberSign[] nodeMemberSigns = ComponentsFactory.ConstantsSigns.GetUserGroupMember;
         
         INode node = ComponentsFactory.CreateNode(nodeSign, nodeMemberSigns);

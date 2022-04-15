@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CalistoStandars\CalistoStandars.csproj" />
+    <ProjectReference Include="..\CalistoStandars\CalistoStandards.csproj" />
   </ItemGroup>
 
 </Project>

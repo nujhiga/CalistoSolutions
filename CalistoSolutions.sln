@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalistoDbCore", "CalistoDbC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestingConsole", "TestingConsole\TestingConsole.csproj", "{A973F3D3-18E8-444E-896F-93BA1127B038}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalistoEdCore", "CalistoEdCore\CalistoEdCore.csproj", "{24B4E712-4F69-4B00-8179-C2020CDE4910}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalistoEdCore", "CalistoEdCore\CalistoEdCore.csproj", "{24B4E712-4F69-4B00-8179-C2020CDE4910}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalistoStandars", "CalistoStandars\CalistoStandars.csproj", "{56DC399E-30E2-42D7-8AB5-41C985960B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalistoStandards", "CalistoStandars\CalistoStandards.csproj", "{56DC399E-30E2-42D7-8AB5-41C985960B5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

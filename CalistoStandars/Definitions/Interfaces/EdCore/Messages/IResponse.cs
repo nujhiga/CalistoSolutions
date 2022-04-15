@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace CalistoStandars.Definitions.Interfaces;
+namespace CalistoStandards.Definitions.Interfaces.EdCore.Messages;
 
 public interface IResponse : IMessage //where T : Enum
 {

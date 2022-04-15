@@ -1,6 +1,8 @@
 ﻿using CalistoDbCore.Services.Factories;
 
-using CalistoStandars.Definitions.Interfaces;
+using CalistoStandards.Definitions.Interfaces.DbCore.Persons;
+using CalistoStandards.Definitions.Interfaces.DbCore.Users;
+using CalistoStandards.Definitions.Models.DbCore.Users;
 
 namespace CalistoDbCore.Services.Builders;
 public abstract class UserGroupFullBuilder : AcademicEntityBuilder<IUserGroup, (short? groupid, char? profile, bool? isAdmin, bool? enabled), IPerson>

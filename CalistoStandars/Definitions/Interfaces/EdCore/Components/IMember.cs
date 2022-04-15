@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 
-namespace CalistoStandars.Definitions.Interfaces;
+namespace CalistoStandards.Definitions.Interfaces.EdCore.Components;
 
 public interface IMember : IElement<MemberSign>, IDisposable
 {
-    [ElementAttr(Enumerations.ElementType.Member, nameof(Value))]
+    [ElementAttr(ClElementType.Member, nameof(Value))]
     object Value { get; set; }
     
     bool InvalidValue { get; set; }

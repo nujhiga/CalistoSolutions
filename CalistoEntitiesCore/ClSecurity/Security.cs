@@ -2,12 +2,13 @@
 using System.Text;
 
 namespace CalistoEnvironment.ClSecurity;
+
 public static class Security
 {
     public static string Encrypt(string key, string data)
     {
         string encData = null!;
-        var keys = GetHashKeys(key);
+        var    keys    = GetHashKeys(key);
 
         try
         {
@@ -26,7 +27,7 @@ public static class Security
     public static string Decrypt(string key, string data)
     {
         string decData = null!;
-        var keys = GetHashKeys(key);
+        var    keys    = GetHashKeys(key);
 
         try
         {
@@ -45,15 +46,15 @@ public static class Security
     private static byte[][] GetHashKeys(string key)
     {
         var result = new byte[2][];
-        var enc = Encoding.UTF8;
+        var enc    = Encoding.UTF8;
 
         using SHA256 sha256 = SHA256.Create();
 
         var rawKey = enc.GetBytes(key);
-        var rawIV = enc.GetBytes(key);
+        var rawIV  = enc.GetBytes(key);
 
         var hashKey = sha256.ComputeHash(rawKey);
-        var hashIV = sha256.ComputeHash(rawIV);
+        var hashIV  = sha256.ComputeHash(rawIV);
 
         Array.Resize(ref hashIV, 16);
 
@@ -66,14 +67,14 @@ public static class Security
     //source: https://msdn.microsoft.com/de-de/library/system.security.cryptography.aes(v=vs.110).aspx
     private static string EncryptStringToBytesAes(string plainText, byte[] Key, byte[] IV)
     {
-        if (plainText is not { Length: > 0 }) throw new ArgumentNullException(nameof(plainText));
-        if (Key is not { Length: > 0 }) throw new ArgumentNullException(nameof(Key));
-        if (IV is not { Length: > 0 }) throw new ArgumentNullException(nameof(IV));
+        if (plainText is not {Length: > 0}) throw new ArgumentNullException(nameof(plainText));
+        if (Key is not {Length      : > 0}) throw new ArgumentNullException(nameof(Key));
+        if (IV is not {Length       : > 0}) throw new ArgumentNullException(nameof(IV));
 
         using Aes aes = Aes.Create();
 
         aes.Key = Key;
-        aes.IV = IV;
+        aes.IV  = IV;
 
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
@@ -95,14 +96,14 @@ public static class Security
     {
         byte[] cipherText = Convert.FromBase64String(cipherTextString);
 
-        if (cipherText is not { Length: > 0 }) throw new ArgumentNullException(nameof(cipherText));
-        if (Key is not { Length: > 0 }) throw new ArgumentNullException(nameof(Key));
-        if (IV is not { Length: > 0 }) throw new ArgumentNullException(nameof(IV));
+        if (cipherText is not {Length: > 0}) throw new ArgumentNullException(nameof(cipherText));
+        if (Key is not {Length       : > 0}) throw new ArgumentNullException(nameof(Key));
+        if (IV is not {Length        : > 0}) throw new ArgumentNullException(nameof(IV));
 
         using var aes = Aes.Create();
 
         aes.Key = Key;
-        aes.IV = IV;
+        aes.IV  = IV;
 
         var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 

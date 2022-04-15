@@ -1,4 +1,7 @@
-﻿namespace CalistoStandars.Definitions.Models;
+﻿using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
+
+namespace CalistoStandards.Definitions.Models.EdCore.Messages.MessageStructures;
 public abstract class RequestStructure : IRequestStructure
 {
     public MessageSign? RequestSign { get; }

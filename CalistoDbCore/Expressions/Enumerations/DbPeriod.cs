@@ -1,5 +1,4 @@
-﻿namespace CalistoDbCore.Expressions.Enumerations;
-
+﻿namespace CalistoDbCore.Expressions.Builders;
 public enum DbPeriod
 {
     None,
@@ -7,7 +6,3 @@ public enum DbPeriod
     Cuatrimestre,
     AnoIngreso
 }
-
-
-
-

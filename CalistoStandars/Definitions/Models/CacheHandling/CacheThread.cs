@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Models;
+﻿namespace CalistoStandards.Definitions.Models.CacheHandling;
 
 public sealed class CacheThread
 {

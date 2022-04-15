@@ -1,4 +1,6 @@
-﻿namespace CalistoStandars.Definitions.Interfaces;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Users;
+
+namespace CalistoStandards.Definitions.Models.DbCore.Users;
 
 public sealed class UserGroup : IUserGroup
 {
@@ -6,6 +8,7 @@ public sealed class UserGroup : IUserGroup
     public char? Profile { get; set; }
     public short? GroupID { get; set; }
     public bool? IsAdmingGroup { get; set; }
+
     public EdGroupType? GroupType { get; set; }
 
     public static UserGroup Student => new UserGroup(null, 'A', false);

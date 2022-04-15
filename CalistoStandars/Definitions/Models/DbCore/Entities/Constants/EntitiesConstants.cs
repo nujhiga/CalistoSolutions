@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Models.DbCore.Entities.Constants;
+﻿namespace CalistoStandards.Definitions.Models;
 public static class EntitiesConstants
 {
 

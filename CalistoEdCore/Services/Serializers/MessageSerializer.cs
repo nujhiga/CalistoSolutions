@@ -1,11 +1,10 @@
 ﻿using System.Text;
 using CalistoEdCore.Services.Providers;
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Extensions;
-using CalistoStandars.Definitions.Interfaces;
-using CalistoStandars.Definitions.Models;
+using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+using CalistoStandards.Definitions.Models.EdCore.Components;
 
-namespace CalistoEdCore.Services.Factories;
+
+namespace CalistoEdCore.Services.Serializers;
 
 public sealed class MessageSerializer : IDisposable
 {
@@ -100,21 +99,21 @@ public sealed class MessageSerializer : IDisposable
         if (body.Sign is not BodySign.None)
             _builder.AppendLine(SerializerProvider.GetStatamen(body.Sign));
 
-        if (body.ContentPattern is BodyContentPattern.Members)
+        if (body.ContentPattern is ClMessagePattern.Members)
         {
-            _ = body.TryConvertBodyContent(out BodyMembers bodyContent);
+            _ = MessagesExtensions.TryConvertBodyContent( body , out BodyMembers bodyContent);
             AppendMembers(bodyContent.Members);
         }
-        else if (body.ContentPattern is BodyContentPattern.NodesMembers)
+        else if (body.ContentPattern is ClMessagePattern.Nodes)
         {
-            _ = body.TryConvertBodyContent(out BodyNodesMembers bodyContent);
+            _ = MessagesExtensions.TryConvertBodyContent( body , out BodyNodesMembers bodyContent);
 
             foreach (INode node in bodyContent.Nodes)
                 AppendNode(in node);
         }
-        else if (body.ContentPattern is BodyContentPattern.MemberNode)
+        else if (body.ContentPattern is ClMessagePattern.MemberNode)
         {
-            _ = body.TryConvertBodyContent(out BodyMemberNode bodyContent);
+            _ = MessagesExtensions.TryConvertBodyContent( body , out BodyMemberNode bodyContent);
 
             (IMember member, INode node) = bodyContent.SingleMemberSingleNode;
 

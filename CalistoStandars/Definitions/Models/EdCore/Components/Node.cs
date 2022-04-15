@@ -1,11 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using CalistoStandards.Definitions.Interfaces.EdCore.Components;
 
-namespace CalistoStandars.Definitions.Models;
+namespace CalistoStandards.Definitions.Models.EdCore.Components;
 
 
 public sealed class Node : Element<NodeSign>, INode
 {
-    public Node(NodeSign sign, IEnumerable<MemberSign> memberSigns) : base(sign,  Enumerations.ElementType.Node)
+    public Node(NodeSign sign, IEnumerable<MemberSign> memberSigns) : base(sign, ClElementType.Node)
     {
         var auxMembers = new Collection<IMember>();
 
@@ -16,7 +17,7 @@ public sealed class Node : Element<NodeSign>, INode
     }
 
     public Node(NodeSign sign, IEnumerable<IMember> members) :
-        base(sign, Enumerations.ElementType.Node) => Members = members;
+        base(sign, ClElementType.Node) => Members = members;
 
     public IEnumerable<IMember> Members { get; set; }
     public override string ToString() => $"Node: {Sign}";

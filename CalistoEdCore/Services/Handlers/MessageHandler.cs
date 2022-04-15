@@ -2,39 +2,39 @@
 using System.Text;
 
 using CalistoEdCore.Services.Factories;
-
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Interfaces;
-using CalistoStandars.Definitions.Structures;
+using CalistoStandards.Definitions;
+using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
+using CalistoStandards.Definitions.Structures.Cls;
+using CalistoStandards.Providers;
 
 namespace CalistoEdCore.Services.Handlers;
 public abstract class MessageHandler
 {
     protected const string BaseLocation = "urn:Educativa/Aula";
     protected const string Header = "SOAPAction";
-    
-    protected readonly Func<int> GetMessageCountCallback;
+
+    //protected readonly Func<int> GetMessageCountCallback;
 
     protected readonly HttpClient WClient;
     internal readonly MessageBuilder MBuilder;
 
+    private readonly KeyedDelegator _delegator = KeyedDelegator.Instance;
+
     public CampusTarget UsingCampus { get; set; }
 
-    public MessageHandler()
+    protected MessageHandler()
     {
         
+        MBuilder = new MessageBuilder();
     }
 
-    protected MessageHandler(in HttpClient wClient, ref (Action addCallback, Func<int> getCallback) addGetCallbacks)
+    protected MessageHandler(in HttpClient wClient)
     {
         WClient = wClient;
-
-        GetMessageCountCallback = addGetCallbacks.getCallback;
-
-        MBuilder = new MessageBuilder(ref addGetCallbacks);
+        MBuilder = new MessageBuilder();
     }
 
-   // protected MessageHandler(in HttpClient wClient) => WClient = wClient;
+    // protected MessageHandler(in HttpClient wClient) => WClient = wClient;
 
     public async Task<IResponse> RequestResponse(MessageSign sign, object source)
     {
@@ -57,7 +57,9 @@ public abstract class MessageHandler
 
         httpReqMsg.Content = content;
 
-        using HttpResponseMessage httpResp = await WClient.SendAsync
+        HttpClient client = _delegator.Execute<HttpClient>(ClConsts.ClEnviroment.GetClient);
+
+        using HttpResponseMessage httpResp = await client.SendAsync
             (httpReqMsg, HttpCompletionOption.ResponseContentRead);
 
         string xmlResponse = await httpResp.Content.ReadAsStringAsync();

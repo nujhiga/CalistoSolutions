@@ -1,10 +1,11 @@
-﻿using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Interfaces;
+﻿using CalistoStandards.Definitions.Models.DbCore.Users;
 
 namespace CalistoDbCore.Extensions;
+
 public static class AcademicEntityExtensions
 {
-    public static void AlterGroup(this UserGroup inGroup, bool? enabled = null, char? profile = null, bool? isAdminGroup = null, EdGroupType? groupType = null)
+    public static void AlterGroup(this UserGroup inGroup,             bool?        enabled = null, char? profile = null,
+                                  bool?          isAdminGroup = null, EdGroupType? groupType = null)
     {
         if (enabled is { }) inGroup.Enabled = enabled;
 
@@ -15,7 +16,8 @@ public static class AcademicEntityExtensions
         if (groupType is { }) inGroup.GroupType = groupType;
     }
 
-    public static UserGroup GetAlterated(this UserGroup inGroup, bool? enabled = null, char? profile = null, bool? isAdminGroup = null, EdGroupType? groupType = null)
+    public static UserGroup GetAlterated(this UserGroup inGroup,             bool? enabled = null, char? profile = null,
+                                         bool?          isAdminGroup = null, EdGroupType? groupType = null)
     {
         if (enabled is { }) inGroup.Enabled = enabled;
 
@@ -27,5 +29,4 @@ public static class AcademicEntityExtensions
 
         return inGroup;
     }
-
 }

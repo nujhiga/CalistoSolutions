@@ -1,35 +1,32 @@
 ﻿using System.Collections;
 using System.Net;
-using CalistoStandars.Definitions.Interfaces;
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Extensions;
+
+using CalistoEdCore.Services.Providers;
+using CalistoEdCore.Services.Serializers;
+using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
+
 
 namespace CalistoEdCore.Services.Factories;
 
 internal sealed class MessageBuilder
 {
-    private readonly Action _addMessageCountCallback;
-    private readonly Func<int> _getMessageCountCallback;
 
-    internal MessageBuilder(ref (Action addCallback, Func<int> getCallback) addGetCallBacks)
+
+    internal MessageBuilder()
     {
-        _addMessageCountCallback = addGetCallBacks.addCallback;
-        _getMessageCountCallback = addGetCallBacks.getCallback;
+
     }
 
     internal TMessage GetMessage<TMessage>(in MessageSign sign, in object source) where TMessage : IMessage
     {
         TMessage message = default;
-
-        int currentMessageID = _getMessageCountCallback();
-
+        
         if (typeof(TMessage) == typeof(IRequest))
-            message = (TMessage)GetRequest(in sign, in source, in currentMessageID);
+            message = (TMessage)GetRequest(in sign, in source,  0);
         else if (typeof(TMessage) == typeof(IResponse))
-            message = (TMessage)GetResponse(in sign, in source, in currentMessageID);
-
-        _addMessageCountCallback();
-
+            message = (TMessage)GetResponse(in sign, in source,  0);
+        
         return message;
     }
 
@@ -87,7 +84,7 @@ internal sealed class MessageBuilder
 
     private static bool IsMassiveRequest<TSign>(in object source, in TSign sign) => IsEnumerableSource(in source) && IsMassiveSign(in sign);
     private static bool IsEnumerableSource(in object source) => source.GetType().GetInterface(nameof(IEnumerable)) is not null || source.GetType().IsArray;
-    private static bool IsMassiveSign<TSign>(in TSign sign) => sign is MessageSign mSing && mSing.IsMassiveRequest();
+    private static bool IsMassiveSign<TSign>(in TSign sign) => sign is MessageSign mSing && MessagesExtensions.IsMassiveRequest( mSing );
     
 }
 

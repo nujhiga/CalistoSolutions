@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\MessagesStructs.json" />
+  </ItemGroup>
+
+
+
+  <!--<ItemGroup>
+    <None Remove="Resources\RequestStructures.json" />
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <Folder Include="Definitions\Extensions\DbCore\" />
+  </ItemGroup>
+
+
+
+</Project>

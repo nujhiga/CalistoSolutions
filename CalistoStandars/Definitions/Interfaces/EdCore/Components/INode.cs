@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
 
-namespace CalistoStandars.Definitions.Interfaces;
+namespace CalistoStandards.Definitions.Interfaces.EdCore.Components;
 
 public interface INode : IElement<NodeSign>, IDisposable
 {
-    [ElementAttr(Enumerations.ElementType.MemberCollection)]
+    [ElementAttr(ClElementType.MemberCollection)]
     IEnumerable<IMember> Members { get; set; }
     PropertyInfo MembersProperty => GetType().GetProperty(nameof(Members))!;
 }
+

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace CalistoStandars.Definitions.Structures;
+namespace CalistoStandards.Definitions.Structures.EdCore;
 
 public readonly struct EdRequestEndpoint : IEquatable<EdRequestEndpoint>
 {

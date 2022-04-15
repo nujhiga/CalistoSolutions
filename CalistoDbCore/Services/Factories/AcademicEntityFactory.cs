@@ -1,4 +1,4 @@
-﻿using CalistoStandars.Definitions.Interfaces;
+﻿using CalistoStandards.Definitions.Models.DbCore.Users;
 
 namespace CalistoDbCore.Services.Factories;
 public static class AcademicEntityFactory

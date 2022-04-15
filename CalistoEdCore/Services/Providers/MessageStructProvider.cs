@@ -1,8 +1,7 @@
-﻿using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Interfaces;
-using CalistoStandars.Definitions.Models;
+﻿using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
+using CalistoStandards.Definitions.Models.EdCore.Messages.MessageStructures;
 
-namespace CalistoEdCore.Services.Factories;
+namespace CalistoEdCore.Services.Providers;
 
 public static class MessageStructProvider
 {

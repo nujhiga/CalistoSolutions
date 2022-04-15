@@ -1,13 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿namespace CalistoDbCore.Expressions.Builders;
 
-using CalistoDbCore.Expressions.BuildingOptions.OptionsModels;
-
-namespace CalistoDbCore.Expressions.BuildingOptions.Factory;
 public static class OptionFactory
 {
-
     public static ExpressionOption<TSign, TValue> WithOption<TSign, TValue>(TSign fieldSign, TValue constValue,
-        ExpressionType expType = ExpressionType.Equal) where TSign : struct, Enum
+                                                                            ExpressionType expType =
+                                                                                ExpressionType.Equal)
+        where TSign : struct, Enum
     {
         return new ExpressionOption<TSign, TValue>(fieldSign, constValue, expType);
     }

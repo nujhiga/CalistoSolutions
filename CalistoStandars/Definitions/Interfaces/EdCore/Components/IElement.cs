@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace CalistoStandars.Definitions.Interfaces;
+namespace CalistoStandards.Definitions.Interfaces.EdCore.Components;
 
 /// <summary>
 ///     Common Interface of Element.
@@ -10,7 +10,7 @@ namespace CalistoStandars.Definitions.Interfaces;
 public interface IElement<TSign> where TSign : Enum
 {
     TSign? Sign { get; }
-    ElementType? ElementType { get; }
+    ClElementType? ElementType { get; }
     public PropertyInfo SignProperty => GetType().GetProperty(nameof(Sign))!;
 
 }

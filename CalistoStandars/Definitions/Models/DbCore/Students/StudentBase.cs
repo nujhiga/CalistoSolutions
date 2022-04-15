@@ -1,7 +1,7 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Users;
-using CalistoStandars.Definitions.Models.DbCore.Persons;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Students;
+using CalistoStandards.Definitions.Models.DbCore.Persons;
 
-namespace CalistoStandars.Definitions.Models.DbCore.Students;
+namespace CalistoStandards.Definitions.Models.DbCore.Students;
 public abstract class StudentBase : PersonBase, IStudentBase
 {
     public bool SingleCareer => CareersInfo?.Count == 1;
@@ -13,13 +13,13 @@ public abstract class StudentBase : PersonBase, IStudentBase
     protected StudentBase(object? personID) : base(personID)
     {
     }
-    protected StudentBase(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)
-    {
+    //protected StudentBase(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)
+    //{
         
-    }
-    protected StudentBase(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
-    {
-    }
+    //}
+    //protected StudentBase(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
+    //{
+    //}
     
     public ICareerInfo GetCareerInfo(int? careerid)
     {

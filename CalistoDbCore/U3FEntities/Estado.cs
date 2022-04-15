@@ -2,7 +2,7 @@
 {
     public partial class Estado
     {
-        public string Estado1 { get; set; } = null!;
-        public string? Estdes { get; set; }
+        public string  Estado1 { get; set; } = null!;
+        public string? Estdes  { get; set; }
     }
 }

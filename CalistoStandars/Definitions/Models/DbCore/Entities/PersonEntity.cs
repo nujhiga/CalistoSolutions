@@ -1,6 +1,6 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
 
-namespace CalistoStandars.Definitions.Models.DbCore.Entities;
+namespace CalistoStandards.Definitions.Models;
 public sealed class PersonEntity : IPersonEntitys
 {
     public double Legajo { get; set; }

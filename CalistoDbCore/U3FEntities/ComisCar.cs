@@ -2,11 +2,11 @@
 {
     public partial class ComisCar
     {
-        public int Id { get; set; }
-        public int? Comision { get; set; }
-        public int? Carrera { get; set; }
-        public string? AnoIng { get; set; }
+        public int     Id           { get; set; }
+        public int?    Comision     { get; set; }
+        public int?    Carrera      { get; set; }
+        public string? AnoIng       { get; set; }
         public string? Cuatrimestre { get; set; }
-        public string? Vale { get; set; }
+        public string? Vale         { get; set; }
     }
 }

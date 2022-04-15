@@ -1,2 +1,2 @@
-﻿namespace CalistoStandars.Definitions.Records.DbCore;
+﻿namespace CalistoStandards.Definitions.Records.DbCore;
 

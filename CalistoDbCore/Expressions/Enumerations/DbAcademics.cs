@@ -1,4 +1,5 @@
-﻿namespace CalistoDbCore.Expressions.Enumerations;
+﻿namespace CalistoDbCore.Expressions.Builders;
+
 public enum DbAcademics
 {
     None,

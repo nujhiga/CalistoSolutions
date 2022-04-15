@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace CalistoStandars.Definitions.Models;
+namespace CalistoStandards.Definitions.Models.CacheHandling;
 
 
 

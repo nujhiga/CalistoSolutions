@@ -1,4 +1,4 @@
-﻿namespace CalistoDbCore.Expressions.Enumerations;
+﻿namespace CalistoDbCore.Expressions.Builders;
 
 public enum DbCareers
 {
@@ -6,7 +6,3 @@ public enum DbCareers
     CarreraId,
     Id,
 }
-
-
-
-

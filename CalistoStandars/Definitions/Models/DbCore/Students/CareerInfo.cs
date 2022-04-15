@@ -1,4 +1,6 @@
-﻿namespace CalistoStandars.Definitions.Interfaces;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Students;
+
+namespace CalistoStandards.Definitions.Models.DbCore.Students;
 
 public sealed class CareerInfo : ICareerInfo
 {

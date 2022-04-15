@@ -1,12 +1,14 @@
-﻿using CalistoDbCore.Services.Repositories;
-using CalistoDbCore.U3FEntities;
+﻿
 using CalistoEnvironment;
-
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Structures;
-
+using CalistoStandards.Definitions;
+using CalistoStandards.Definitions.Structures.Cls;
+using CalistoStandards.Definitions.Enumerations;
+using CalistoStandards.Definitions.Factories.Cls;
+using CalistoStandards.Definitions.Models.EdCore.Messages;
+using CalistoStandards.Providers;
 
 ClEnvironment clEnvironment = ClEnvironment.Instance;
+KeyedDelegator delegator = KeyedDelegator.Instance;
 
 clEnvironment.InitEdCore();
 
@@ -15,11 +17,26 @@ CampusTarget campus = clEnvironment.Gateway.CreateNewTarget(ClCampus.U3F);
 clEnvironment.Gateway.CurrentCampus = campus;
 
 
-var repo = new CalistoDbCore.Services.Repositories.DbRepository(campus, new Period[] {new(20221)});
+var b = ClMessageStructFactory.GetMessageStruct<IClRequest>();
 
-await repo.ExecuteRequestAsync<U3fAlu>(DbRequestSign.GetNominals, SelectionDepth.Simple, ExecutionOptions.NoCache);
+//ClMessageStructFactory.TEst();
 
-{}
+
+
+//var f = delegator.Execute<HttpClient>(ClConsts.ClEnviroment.GetClient);
+
+
+
+//var repo = new CalistoDbCore.Services.Repositories.DbRepository(campus, new Period[] { new(20221) });
+
+{ }
+
+
+{ }
+
+//await repo.ExecuteRequestAsync<U3fAlu>(DbRequestSign.GetNominals, SelectionDepth.Simple, ExecutionOptions.NoCache);
+
+{ }
 
 
 //IPerson per = new Person() { UserID = 123880, FieldName = "per", LastName = "jajajaj", Email = "fff@aaa.com" };
@@ -45,10 +62,10 @@ await repo.ExecuteRequestAsync<U3fAlu>(DbRequestSign.GetNominals, SelectionDepth
 //bool addedReq1 = clEnvironment.EdCore.MessageQueueHandler.EnqueueRequest(MessageSign.asignar_usuario_grupo, persons[1]);
 //bool addedResp2 = await clEnvironment.EdCore.MessageQueueHandler.RequestResponseEnqueue();
 
-{}
+{ }
 //MessageBuilder bb = new(campus);
 
-//var xx = bb.GetMessage(MessageSign.registrar_usuarios, persons, ElementType.Request);
+//var xx = bb.GetMessage(MessageSign.registrar_usuarios, persons, ClElementType.Request);
 
 { }
 //bb.GetRequest(MessageSign.registrar_usuario, per);

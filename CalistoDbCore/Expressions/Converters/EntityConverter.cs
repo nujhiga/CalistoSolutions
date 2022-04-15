@@ -1,19 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
-
-using CalistoDbCore.Expressions.Builders;
-
-using CalistoStandars.Definitions.Enumerations.DbCore;
-using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
-
+using CalistoDbCore.Expressions.Factories.Helpers;
+using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
-namespace CalistoDbCore.Expressions.Converters;
+namespace CalistoDbCore.Expressions.Builders;
 
 public static class EntityConverter
 {
-
     public static async Task<ConcurrentDictionary<object, TResult>> Convert<TSource, TResult>(
         IQueryable<TSource> queryableSource, IEnumerable<EntityMemberSign> selectorSigns)
         where TSource : class where TResult : class, IEntity
@@ -27,16 +21,17 @@ public static class EntityConverter
         {
             if (ent is null) return;
 
-            var propValues = GetSourceValues(in ent, in selectorSigns);
-            TResult instance = GetInstanceParallel<TResult>(in propValues);
+            var     propValues = GetSourceValues(in ent, in selectorSigns);
+            TResult instance   = GetInstanceParallel<TResult>(in propValues);
 
             results.TryAdd(instance.EntityID, instance);
         });
 
         return results;
     }
-    
-    private static TResult GetInstanceParallel<TResult>(in ConcurrentDictionary<EntityMemberSign, object> entityValues) where TResult : class, IEntity
+
+    private static TResult GetInstanceParallel<TResult>(in ConcurrentDictionary<EntityMemberSign, object> entityValues)
+        where TResult : class, IEntity
     {
         TResult instance = Activator.CreateInstance<TResult>();
 
@@ -55,11 +50,12 @@ public static class EntityConverter
 
             pinfo.SetValue(instance, value);
         });
-        
+
         return instance;
     }
 
-    private static ConcurrentDictionary<EntityMemberSign, object> GetSourceValues<TEntity>(in TEntity source, in IEnumerable<EntityMemberSign> signs) where TEntity : class
+    private static ConcurrentDictionary<EntityMemberSign, object> GetSourceValues<TEntity>(
+        in TEntity source, in IEnumerable<EntityMemberSign> signs) where TEntity : class
     {
         ConcurrentDictionary<EntityMemberSign, object>
             propValues = new ConcurrentDictionary<EntityMemberSign, object>();
@@ -67,14 +63,14 @@ public static class EntityConverter
         IEnumerable<PropertyInfo> properties = source.GetSourceProperties(signs);
 
         var lSource = source; //todo:7422#1 - verify if its a good practice
-        
+
         properties.AsParallel().ForAll(prop =>
         {
             EntityMemberSign mSign =
                 Enum.Parse<EntityMemberSign>(prop.Name);
 
             object pValue = prop.GetValue(lSource)!;
-            
+
             propValues.TryAdd(mSign, pValue);
         });
 

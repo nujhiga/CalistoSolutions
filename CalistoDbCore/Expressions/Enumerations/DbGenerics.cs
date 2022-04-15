@@ -1,5 +1,4 @@
-﻿namespace CalistoDbCore.Expressions.Enumerations;
-
+﻿namespace CalistoDbCore.Expressions.Builders;
 public enum DbGenerics
 {
     None,
@@ -7,7 +6,3 @@ public enum DbGenerics
     CarreraId,
     Legajo,
 }
-
-
-
-

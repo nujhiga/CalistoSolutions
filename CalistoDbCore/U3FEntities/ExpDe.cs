@@ -4,7 +4,7 @@
     {
         public double? Coddes { get; set; }
         public string? Desdes { get; set; }
-        public int? Area { get; set; }
+        public int?    Area   { get; set; }
         public string? Observ { get; set; }
     }
 }

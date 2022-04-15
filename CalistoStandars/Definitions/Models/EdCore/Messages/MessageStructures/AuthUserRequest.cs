@@ -1,4 +1,7 @@
-﻿namespace CalistoStandars.Definitions.Models;
+﻿using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+using CalistoStandards.Definitions.Models.EdCore.Components.Factories;
+
+namespace CalistoStandards.Definitions.Models.EdCore.Messages.MessageStructures;
 public class AuthUserRequest : RequestStructure
 {
     public AuthUserRequest(bool usingTrust) :
@@ -6,8 +9,8 @@ public class AuthUserRequest : RequestStructure
                         : MessageSign.autenticar_usuario)
     {
         var memberSigns = usingTrust 
-            ? new[] {MemberSign.id_usuario, MemberSign.clave, MemberSign.id_grupo}
-            : new[] {MemberSign.id_usuario, MemberSign.clave};
+            ? new[] { MemberSign.id_usuario, MemberSign.clave, MemberSign.id_grupo}
+            : new[] { MemberSign.id_usuario, MemberSign.clave};
 
         IMember[] members = ComponentsFactory.CreateMembers(memberSigns);
 

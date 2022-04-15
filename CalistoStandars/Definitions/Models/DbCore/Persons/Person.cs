@@ -1,7 +1,6 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Users;
-using CalistoStandars.Definitions.Models.DbCore.Persons;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Persons;
 
-namespace CalistoStandars.Definitions.Models;
+namespace CalistoStandards.Definitions.Models.DbCore.Persons;
 
 public class Person : PersonBase, IPerson
 {
@@ -19,11 +18,11 @@ public class Person : PersonBase, IPerson
     {
     }
 
-    public Person(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)
-    {
-    }
+    //public Person(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)
+    //{
+    //}
 
-    public Person(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
-    {
-    }
+    //public Person(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : base(personID, personEntity, campusUser)
+    //{
+    //}
 }

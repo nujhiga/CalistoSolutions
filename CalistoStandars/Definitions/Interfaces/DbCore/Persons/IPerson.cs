@@ -1,8 +1,6 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Persons;
+﻿namespace CalistoStandards.Definitions.Interfaces.DbCore.Persons;
 
-namespace CalistoStandars.Definitions.Interfaces;
-
-[ElementAttr(ElementType.Serializable)]
+[ElementAttr(ClElementType.Serializable)]
 public interface IPerson : IPersonBase
 {
     [MemberAttr(MemberSign.dato_adicional_1)]
@@ -13,30 +11,30 @@ public interface IPerson : IPersonBase
     char? Gender { get; set; }
 
 
-    [MemberAttr(MemberSign.telefono)] 
+    [MemberAttr(MemberSign.telefono)]
     string? PhoneNumber { get; set; }
 
 
-    [MemberAttr(MemberSign.direccion)] 
+    [MemberAttr(MemberSign.direccion)]
     string? Address { get; set; }
 
 
-    [MemberAttr(MemberSign.nombre, isNullable: false)] 
+    [MemberAttr(MemberSign.nombre, isNullable: false)]
     string? Name { get; set; }
 
 
-    [MemberAttr(MemberSign.apellido, isNullable: false)] 
+    [MemberAttr(MemberSign.apellido, isNullable: false)]
     string? LastName { get; set; }
 
 
-    [MemberAttr(MemberSign.email, isNullable: false)] 
+    [MemberAttr(MemberSign.email, isNullable: false)]
     string? Email { get; set; }
 
 
-    [MemberAttr(MemberSign.codigo_postal)] 
+    [MemberAttr(MemberSign.codigo_postal)]
     string? PostalCode { get; set; }
 
 
-    [MemberAttr(MemberSign.localidad)] 
+    [MemberAttr(MemberSign.localidad)]
     string? Location { get; set; }
 }

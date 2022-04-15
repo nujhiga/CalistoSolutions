@@ -1,35 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
-
-using CalistoDbCore.Expressions.Builders;
-using CalistoDbCore.Expressions.Enumerations;
-
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
-using CalistoStandars.Definitions.Models;
-using CalistoStandars.Definitions.Structures;
-
+using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
+using CalistoStandards.Definitions.Models.CacheHandling;
+using CalistoStandards.Definitions.Structures.Cls;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalistoDbCore.Services.Repositories;
-
-public enum DbRequestSign
-{
-    None,
-    GetPersons,
-    GetNominals,
-    GetStudents,
-    GetTeachers,
-    GetCareers,
-    GetCareerPlans,
-    GetAssignatures,
-    GetCommissions,
-    GetStudentsSync,
-    GetSyncCareers,
-    GetSyncCommissions,
-    GetSyncExamns
-}
 
 public static class DbRequestParameterExtensions
 {
@@ -51,48 +28,83 @@ public static class DbRequestParameterExtensions
     {
         if (value is null) return param;
 
-        Type type = value.GetType();
+        if (value is DbRegularity regularity)
+        {
+            Handler.HandleRegularity(ref param, regularity);
+        }
+        else if (value is ClCampus campus)
+        {
+        }
+        else if (value is int academic)
+        {
+        }
+        else if (value is int?[] academics)
+        {
+        }
+        else if (value is double[] users)
+        {
+        }
+        else if (value is Period[] periods)
+        {
+        }
 
-        if (type == typeof(DbRegularity))
-        {
-            param.Regularity = (DbRegularity)value;
-        }
-        else if (type == typeof(ClCampus))
-        {
-            param.Campus = (ClCampus)value;
-        }
-        else if (type == typeof(int?[]))
-        {
-            param.AcademicIDs = (int?[])value;
-        }
-        else if (type == typeof(double[]))
-        {
-            param.UsersIDs = (double[])value!;
-        }
-        else if (type == typeof(Period[]))
-        {
-            param.Periods = (Period[])value!;
-        }
-        
+        //if (type == typeof(DbRegularity))
+        //{
+        //    Handler.HandleRegularity(ref param, value);
+        //    //if (param.Regularity is null)
+        //    //    param.Regularity = Provider.GetNewParamMember<DbRegularity>(value);
+        //}
+        //else if (type == typeof(ClCampus))
+        //{
+        //    param.Campus = value as DbParamMember<ClCampus>;
+        //}
+        //else if (type == typeof(int?[]))
+        //{
+        //    param.AcademicsIDs = value as DbParamMember<int?[]>;
+        //}
+        //else if (type == typeof(double[]))
+        //{
+        //    param.UsersIDs = value as DbParamMember<double[]>;
+        //}
+        //else if (type == typeof(Period[]))
+        //{
+        //    param.Periods = value as DbParamMember<Period[]>;
+        //}
+
         return param;
     }
-  
-}
 
+    private static class Handler
+    {
+        internal static void HandleStrategy(ref ClDbParameter parameter, in object value)
+        {
+        }
+
+
+        internal static void HandleRegularity(ref ClDbParameter parameter, DbRegularity regularity)
+        {
+            if (!parameter.UsingRegularity)
+                parameter.Regularity = new DbParamMember<DbRegularity>(regularity);
+            else
+            {
+                parameter.Regularity!.Value = regularity;
+            }
+        }
+    }
+}
 
 public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerable<IEntity>>
 {
-    public bool Working { get; private set; }
+    public bool              Working      { get; private set; }
     public CancellationToken Cancellation { get; }
 
     private readonly CacheHandler<DbRequestSign> _cacheControl;
-    
+
     public DbRepository(CampusTarget campus, Period[] periods)
     {
-        Cancellation = new CancellationToken();
+        Cancellation  = new CancellationToken();
         _cacheControl = new CacheHandler<DbRequestSign>(CleanCacheRequest);
     }
-
 
 
     private void CleanCacheRequest(DbRequestSign rtype)
@@ -101,9 +113,9 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         //entities = Enumerable.Empty<TEntity>();
     }
 
-    public async Task<bool> ExecuteRequestAsync<TEntity>(DbRequestSign dataRequestType, SelectionDepth selectionDepth,
-         ExecutionOptions executionOptions, bool disposeParams = true) 
-    where TEntity : class, IEntity
+    public async Task<bool> ExecuteRequestAsync<TEntity>(DbRequestSign    dataRequestType,
+                                                         ExecutionOptions executionOptions, bool disposeParams = true)
+        where TEntity : class, IEntity
     {
         if (Working) return false;
 
@@ -112,36 +124,42 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         using MrQueryBuilder<TEntity> builder = new MrQueryBuilder<TEntity>();
 
         ClDbParameter parameter = new ClDbParameter(dataRequestType);
-        parameter = parameter.With(ClCampus.U3F).With(new Period[]{new(20221)});
+        parameter = parameter.With(ClCampus.U3F).With(new Period[] {new(20221)});
 
         IQueryable<TEntity> query = builder.GetQuery(parameter);
 
 
-        {}
+        {
+        }
 
         //QueryBuilder<VisAlu> mm = new QueryBuilder<VisAlu>();
 
         //using U3FContext ctx = new();
 
         //var x = await mm.GetSyncQuery( ctx);
-        {}
+        {
+        }
 
-      //  var qry = x.ToQueryString();
+        //  var qry = x.ToQueryString();
 
         // var xx = mm.GetNominalEntities();
 
-        { }
+        {
+        }
         //await using U3FContext ctx = new();
 
         //    INominalEntity person = new NominalEntity();
-        { }
+        {
+        }
         //  RequestParam = RequestParam.With<IEntity>(person).With<DbRegularity>(DbRegularity.Regular).With<EntityMemberSign[]>(new[] { EntityMemberSign.Nombres, EntityMemberSign.Documento });
 
-        { }
+        {
+        }
         //   var res = DbRequestFactory.GetEntities2(in ctx, RequestParam);
         //IQueryable<IEntity> requestingEntities = _dbRequestFactory.
         //    GetRequest(in ctx, in dataRequestType, in selectionDepth);
-        { }
+        {
+        }
         // if (requestingEntities is null) return false;
 
         // IEnumerable<IEntity> results = _dbRequestFactory.GetSyncCareerStudents2(in ctx, selectionDepth);
@@ -149,7 +167,8 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
 
 
         //requestingEntities.ToListAsync(Cancellation);
-        { }
+        {
+        }
 
         // if (executionOptions.CacheResults)
         //      SetCache(dataRequestType, in results, ref executionOptions);
@@ -158,7 +177,8 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
 
         Working = false;
 
-        { }
+        {
+        }
         return false; //results.Any();
     }
 
@@ -181,7 +201,6 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         if (options.CacheLifeTime is { } lifeTime)
             _cacheControl.AddStart(dataRequestType, lifeTime);
     }*/
-
 
 
     /*
@@ -218,26 +237,6 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
 
 
     */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /*
@@ -330,5 +329,4 @@ public sealed class DbRepository : ConcurrentDictionary<DbRequestSign, IEnumerab
         }
     }
     */
-
 }

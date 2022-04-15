@@ -1,12 +1,9 @@
 ﻿using System.Data;
-using System.Linq.Expressions;
 
-using CalistoDbCore.Expressions.Extensions;
 using CalistoDbCore.Services.Repositories;
 using CalistoDbCore.U3FEntities;
 
-using CalistoStandars.Definitions.Enumerations.DbCore;
-using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
+using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +22,8 @@ internal interface IQueryBuilder<out TContext> where TContext : DbContext
     void SetParameter(params object[] values);
     void SetCommandTimeOut(TimeSpan timeOut);
     void SetCommandTimeOut(int timeOut);
-
 }
+
 internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<TEntity>, IQueryBuilder<TContext>, IDisposable
     where TEntity : class, IEntity where TContext : DbContext
 {
@@ -36,7 +33,10 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
     public TContext Context { get; }
     public ConnectionState DbState => Context.Database.GetDbConnection().State;
     public bool DbCanConnect => Context.Database.CanConnect();
-    public bool DbWorking => DbState is ConnectionState.Connecting or ConnectionState.Executing or ConnectionState.Fetching;
+
+    public bool DbWorking =>
+        DbState is ConnectionState.Connecting or ConnectionState.Executing or ConnectionState.Fetching;
+
     public bool IsParameter => Parameter is not null;
 
     protected Expression<Func<TEntity, TEntity>> Selector { get; set; }
@@ -59,27 +59,29 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
     protected static Expression<Func<TEntity, TEntity>> BuildSelector(params EntityMemberSign[] memberSigns) =>
         memberSigns.AsSelectExpression<TEntity>();
 
-    protected virtual IQueryable<TEntity> BuildQuery(IQueryable<TEntity> query, params EntityMemberSign[] selectionSigns)
+    protected virtual IQueryable<TEntity> BuildQuery(IQueryable<TEntity> query,
+                                                     params EntityMemberSign[] selectionSigns)
     {
         Expression[] expressions = GetParameterAsExpressions();
 
         if (selectionSigns.Length == 0)
-            
+
             Selector = BuildSelector(selectionSigns);
 
-        query = query.WhereExpressions(expressions).
-            Select(Selector).AsNoTracking();
+        query = query.WhereExpressions(expressions).Select(Selector).AsNoTracking();
 
         return query;
     }
 
     public void SetParameter(ClDbParameter parameter) => Parameter = parameter;
+
     public void SetParameter(DbRequestSign sign, params object[] values)
     {
         Parameter = Parameter.New(sign);
 
         SetParameter(values);
     }
+
     public void SetParameter(params object[] values)
     {
         if (Parameter is null) return;
@@ -91,7 +93,7 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
     public virtual Expression[] GetParameterAsExpressions() => GetExpressions().Where(e => e is not null).ToArray();
     public void SetCommandTimeOut(TimeSpan timeOut) => Context.Database.SetCommandTimeout(timeOut);
     public void SetCommandTimeOut(int timeOut) => Context.Database.SetCommandTimeout(timeOut);
-    
+
     #region IDisposable Pattern
 
     private void Dispose(bool disposing)
@@ -108,7 +110,12 @@ internal abstract class QueryBuilderBase<TEntity, TContext> : ExpressionBuilder<
             _disposed = true;
         }
     }
-    ~QueryBuilderBase() { Dispose(disposing: false); }
+
+    ~QueryBuilderBase()
+    {
+        Dispose(disposing: false);
+    }
+
     public void Dispose()
     {
         Dispose(disposing: true);
@@ -126,7 +133,6 @@ internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FCon
 
     internal override IQueryable<TEntity> GetQuery(ClDbParameter parameter)
     {
-
         SetParameter(parameter);
 
         IQueryable<TEntity> query = parameter.RequestSign switch
@@ -147,13 +153,4 @@ internal sealed class MrQueryBuilder<TEntity> : QueryBuilderBase<TEntity, U3FCon
 
         return query;
     }
-
-
-
-
-
-
 }
-
-
-

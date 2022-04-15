@@ -1,8 +1,8 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Persons;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Persons;
 
-namespace CalistoStandars.Definitions.Interfaces;
+namespace CalistoStandards.Definitions.Interfaces.DbCore.Students;
 
-[ElementAttr(ElementType.Serializable)]
+[ElementAttr(ClElementType.Serializable)]
 public interface IStudentBase : IPersonBase, IEquatable<IStudentBase>
 {
     IList<ICareerInfo>? CareersInfo { get; set; }

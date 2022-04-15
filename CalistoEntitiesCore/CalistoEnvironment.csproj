@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CalistoDbCore\CalistoDbCore.csproj" />
     <ProjectReference Include="..\CalistoEdCore\CalistoEdCore.csproj" />
-    <ProjectReference Include="..\CalistoStandars\CalistoStandars.csproj" />
+    <ProjectReference Include="..\CalistoStandars\CalistoStandards.csproj" />
   </ItemGroup>
 
 </Project>

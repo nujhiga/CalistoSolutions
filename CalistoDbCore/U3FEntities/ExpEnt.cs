@@ -4,6 +4,6 @@
     {
         public double? Codent { get; set; }
         public string? Desent { get; set; }
-        public int? Area { get; set; }
+        public int?    Area   { get; set; }
     }
 }

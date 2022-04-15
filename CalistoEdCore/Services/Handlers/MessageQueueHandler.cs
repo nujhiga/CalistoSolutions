@@ -1,11 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
 
-using CalistoEdCore.Services.Handlers;
-
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Interfaces;
-
-namespace CalistoEdCore.Services.Messages;
+namespace CalistoEdCore.Services.Handlers;
 
 //todo: implement idisposable interface :: tdref:4-230322
 //todo: Implement Pause - Cancel Services tdref:3-230322
@@ -15,11 +11,13 @@ public sealed class MessageQueueHandler : MessageHandler, IDisposable
     private readonly ConcurrentQueue<IRequest> _pendingRequests;
     private readonly ConcurrentQueue<IResponse> _pendingResponses;
     
-    public MessageQueueHandler(in HttpClient wClient, ref (Action addCallback, Func<int> getCallback) callBacks) : base(in wClient, ref callBacks)
+    public MessageQueueHandler(in HttpClient wClient) : base(in wClient)
     {
         _pendingRequests = new ConcurrentQueue<IRequest>();
         _pendingResponses = new ConcurrentQueue<IResponse>();
     }
+
+
 
     public bool EnqueueRequest(in MessageSign sign, in object source)
     {

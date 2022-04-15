@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Interfaces.DbCore.Users;
+﻿namespace CalistoStandards.Definitions.Interfaces.DbCore.Users;
 
 public interface ICampusUser
 {

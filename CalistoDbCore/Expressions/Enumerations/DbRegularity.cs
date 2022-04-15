@@ -1,5 +1,4 @@
-﻿namespace CalistoDbCore.Expressions.Enumerations;
-
+﻿namespace CalistoDbCore.Expressions.Builders;
 public enum DbRegularity
 {
     None,
@@ -9,7 +8,3 @@ public enum DbRegularity
     Licence,
     Curing
 }
-
-
-
-

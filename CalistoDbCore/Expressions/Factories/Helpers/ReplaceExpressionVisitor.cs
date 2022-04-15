@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace CalistoDbCore.Expressions.Builders;
+﻿namespace CalistoDbCore.Expressions.Factories.Helpers;
 
 internal sealed class ReplaceExpressionVisitor : ExpressionVisitor
 {
@@ -20,8 +18,3 @@ internal sealed class ReplaceExpressionVisitor : ExpressionVisitor
         return base.Visit(node);
     }
 }
-
-
-
-
-

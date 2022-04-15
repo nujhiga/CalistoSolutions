@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Exceptions;
+﻿namespace CalistoStandards.Definitions.Exceptions;
 
 public sealed class EducativaSerializationException : EducativaBuilderException
 {

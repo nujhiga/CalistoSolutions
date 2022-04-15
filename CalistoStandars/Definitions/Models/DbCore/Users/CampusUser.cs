@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Models.DbCore.Users;
+﻿namespace CalistoStandards.Definitions.Models.DbCore.Users;
 public class CampusUser
 {
 

@@ -1,17 +1,12 @@
 ﻿using System.Reflection;
 
-using CalistoStandars.Definitions.Enumerations;
-using CalistoStandars.Definitions.Enumerations.DbCore;
-using CalistoStandars.Definitions.Extensions;
-using CalistoStandars.Definitions.Models.DbCore.Attributes;
-
-namespace CalistoDbCore.Expressions.Builders;
-
+namespace CalistoDbCore.Expressions.Factories.Helpers;
 
 internal static class SelectorHelper
 {
     [Obsolete("Review its usefulness")]
-    internal static IEnumerable<PropertyInfo> GetSourcePropertiesParallel<TEntity>(this TEntity source, IEnumerable<EntityMemberSign> propertiesSignsFilter)
+    internal static IEnumerable<PropertyInfo> GetSourcePropertiesParallel<TEntity>(
+        this TEntity source, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
         IEnumerable<PropertyInfo> properties = source!.GetType().GetProperties().AsParallel();
 
@@ -20,7 +15,8 @@ internal static class SelectorHelper
     }
 
 
-    internal static IEnumerable<PropertyInfo> GetSourceProperties<TEntity>(this TEntity source, IEnumerable<EntityMemberSign> propertiesSignsFilter)
+    internal static IEnumerable<PropertyInfo> GetSourceProperties<TEntity>(
+        this TEntity source, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
         IEnumerable<PropertyInfo> properties = source!.GetType().GetProperties();
 
@@ -29,12 +25,8 @@ internal static class SelectorHelper
     }
 
 
-
-
-
-
-
-    internal static IEnumerable<PropertyInfo> GetResultProperties<TResult>(this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
+    internal static IEnumerable<PropertyInfo> GetResultProperties<TResult>(
+        this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
         //IEnumerable<string> signsStrings = propertiesSignsFilter.SelectExp(s => s.ToString());
 
@@ -42,12 +34,11 @@ internal static class SelectorHelper
 
         foreach (string signName in propertiesSignsFilter.Select(p => $"{p}"))
             yield return properties.Single(p => p.Name == signName);
-
-
     }
 
     [Obsolete("Review its usefulness")]
-    internal static IEnumerable<PropertyInfo> GetResultPropertiesParallel<TResult>(this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
+    internal static IEnumerable<PropertyInfo> GetResultPropertiesParallel<TResult>(
+        this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
         //IEnumerable<string> signsStrings = propertiesSignsFilter.SelectExp(s => s.ToString());
 
@@ -55,8 +46,6 @@ internal static class SelectorHelper
 
         foreach (string signName in propertiesSignsFilter.Select(p => $"{p}").AsParallel())
             yield return properties.Single(p => p.Name == signName);
-
-
     }
 
 
@@ -72,13 +61,13 @@ internal static class SelectorHelper
 
             if (!selectSigns.Contains(attr.Sign)) continue;
 
-            if (attr?.Depth is SelectionDepth.Avoid) continue;
+            //if (attr?.Depth is SelectionDepth.Avoid) continue;
 
             yield return pinfo;
         }
     }
 
-
+    [Obsolete("Review commented line")]
     internal static IEnumerable<EntityMemberSign> GetEntitySigns<TEntity>() where TEntity : class
     {
         IEnumerable<PropertyInfo> properties = typeof(TEntity).GetPropertiesWith<EntityAttr>();
@@ -91,10 +80,9 @@ internal static class SelectorHelper
 
             if (attr is null) continue;
 
-            if (attr?.Depth is SelectionDepth.Avoid) continue;
+            //if (attr?.Depth is SelectionDepth.Avoid) continue;
 
             yield return attr!.Sign;
         }
     }
-
 }

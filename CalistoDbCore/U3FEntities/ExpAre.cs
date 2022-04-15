@@ -2,7 +2,7 @@
 {
     public partial class ExpAre
     {
-        public int? Areacod { get; set; }
+        public int?    Areacod { get; set; }
         public string? Areades { get; set; }
     }
 }

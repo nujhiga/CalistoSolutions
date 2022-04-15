@@ -5,14 +5,14 @@ using CalistoDbCore;
 
 using CalistoEdCore;
 
-using CalistoEnvironment.Services.Providers;
-
-using CalistoStandars.Definitions.Structures;
+using CalistoStandards.Definitions.Structures.Cls;
+using CalistoStandards.Providers;
+using CalistoEnvironment.Services.Providers.Gateways;
 
 namespace CalistoEnvironment;
 
 // todo: Implement Pause - Cancel Services :: tdref:3-230322
-public sealed class ClEnvironment : IDisposable
+public sealed class ClEnvironment : IDisposable, IKeyedDelegation
 {
     #region ThreadSafe Singleton Pattern
 
@@ -22,7 +22,7 @@ public sealed class ClEnvironment : IDisposable
 
     private ClEnvironment()
     {
-        _addGetCallbacks = (AddMessageCount, GetMessageCount);
+        SetupDelegations();
     }
 
     public static ClEnvironment Instance
@@ -38,20 +38,32 @@ public sealed class ClEnvironment : IDisposable
             }
         }
     }
+
     #endregion
-    
+
+    internal readonly KeyedDelegator KyDelegator = KeyedDelegator.Instance;
+
     public readonly GatewayProvider Gateway = new();
 
-    public static readonly HttpClient _wsClient = new();
-    public ClDbCore DbCore { get; private set; }
-    public ClEdCore EdCore { get; private set; }
+    public static readonly HttpClient WsClient = new();
+    private static HttpClient GetClient() => WsClient;
 
-    private int _messagesCount = 0;
+    public ClDbCore? DbCore { get; private set; }
+    public ClEdCore? EdCore { get; private set; }
 
-    public void AddMessageCount() => _messagesCount++;
-    public int GetMessageCount() => _messagesCount;
+    public int MessagesCount = 0;
+    public int RequestsCount = 0;
+    public int ResponsesCount = 0;
 
-    private (Action add, Func<int> get) _addGetCallbacks;
+    public void SetupDelegations()
+    {
+        KyDelegator.SetupDelegate(SetHttpClientCredentials);
+        KyDelegator.SetupDelegate(GetClient);
+    }
+
+
+
+    //  private (Action add, Func<int> get) _addGetCallbacks;
 
     #region Calisto DbCore
 
@@ -70,7 +82,39 @@ public sealed class ClEnvironment : IDisposable
 
     #region Calisto EdCore
 
-    public void SetClientCredentials(in CampusTarget? campus = null)
+
+    internal void SetHttpClientCredentials()
+    {
+        const string Basic = "Basic";
+
+        GatewayProvider gate = Gateway;
+        CampusTarget campus = gate.CurrentCampus;
+
+        string preAuthString = GetPreAuthString(in gate);
+        string authString = Convert.ToBase64String(Encoding.Default.GetBytes(preAuthString));
+
+        WsClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(Basic, authString);
+    }
+
+    private static string GetPreAuthString(in GatewayProvider gate)
+    {
+        CampusTarget campus = gate.CurrentCampus;
+
+        StringBuilder sb = new();
+        sb.Append(gate.GetUsAccess(campus.Source));
+        sb.Append(":");
+        sb.Append(gate.GetPwAccess(campus.Source));
+        string preAuthString = sb.ToString();
+        sb.Clear();
+        sb.Capacity = 0;
+        sb.Length = 0;
+
+        return preAuthString;
+    }
+
+    /*
+    private void SetClientCredentials(in CampusTarget? campus = null)
     {
         if (EdCore is null) return;
 
@@ -79,15 +123,18 @@ public sealed class ClEnvironment : IDisposable
         string auxAuthString = campus is { } cmpInstance
             ? $"{Gateway.GetUsAccess(cmpInstance.Source)}:{Gateway.GetPwAccess(cmpInstance.Source)}"
             : $"{Gateway.GetUsAccess()}:{Gateway.GetPwAccess()}";
-       
+
         string authString = Convert.ToBase64String(Encoding.Default.GetBytes(auxAuthString));
-        
-        _wsClient.DefaultRequestHeaders.Authorization =
+
+        WsClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(Basic, authString);
 
         EdCore?.CampusChanged(campus.Value);
     }
-    public void InitEdCore() => EdCore = new ClEdCore(in _wsClient, ref _addGetCallbacks);
+    */
+
+    public void InitEdCore() => EdCore = new ClEdCore(in WsClient);
+
     public async Task ResetEdCore()
     {
         if (EdCore is null) return;
@@ -98,8 +145,9 @@ public sealed class ClEnvironment : IDisposable
     }
 
     #endregion
-    
+
     #region IDisposable Pattern
+
     private void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -129,5 +177,6 @@ public sealed class ClEnvironment : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
     #endregion
 }

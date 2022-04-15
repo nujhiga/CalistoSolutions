@@ -1,0 +1,397 @@
+{
+  "Requests": [
+    {
+      "Sign": "asignar_usuario_grupo",
+      "Pattern": "MemberNode",
+      "Member": {
+        "Sign": "id_usuario"
+      },
+      "Node": {
+        "Sign": "usuario_grupo",
+        "Members": [
+          {
+            "Sign": "administrador_grupo"
+          },
+          {
+            "Sign": "estado"
+          },
+          {
+            "Sign": "id_grupo"
+          },
+          {
+            "Sign": "perfil"
+          }
+        ]
+      }
+    },
+    {
+      "Sign": "asignar_usuarios_grupos",
+      "Pattern": "Container",
+      "Container": {
+        "Sign": "asignar_usuarios_grupos",
+        "Pattern": "MemberNode",
+        "Member": {
+          "Sign": "id_usuario"
+        },
+        "Node": {
+          "Sign": "usuario_grupo",
+          "Members": [
+            {
+              "Sign": "administrador_grupo"
+            },
+            {
+              "Sign": "estado"
+            },
+            {
+              "Sign": "id_grupo"
+            },
+            {
+              "Sign": "perfil"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "Sign": "modificar_usuario_grupo",
+      "Pattern": "MemberNode",
+      "Member": {
+        "Sign": "id_usuario"
+      },
+      "Node": {
+        "Sign": "usuario_grupo",
+        "Members": [
+          {
+            "Sign": "administrador_grupo"
+          },
+          {
+            "Sign": "estado"
+          },
+          {
+            "Sign": "id_grupo"
+          },
+          {
+            "Sign": "perfil"
+          }
+        ]
+      }
+    },
+    {
+      "Sign": "autenticar_usuario",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id_usuario"
+        },
+        {
+          "Sign": "clave"
+        },
+        {
+          "Sign": "id_grupo"
+        }
+      ]
+    },
+    {
+      "Sign": "autenticar_usuario_confiable",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id_usuario"
+        },
+        {
+          "Sign": "id_grupo"
+        }
+      ]
+    },
+    {
+      "Sign": "consultar_grupos",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id_grupo"
+        },
+        {
+          "Sign": "tipo",
+          "Value": null
+        },
+        {
+          "Sign": "id_curso_externo",
+          "Value": null
+        }
+      ]
+    },
+    {
+      "Sign": "consultar_usuarios",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id_usuario"
+        },
+        {
+          "Sign": "id_grupo"
+        },
+        {
+          "Sign": "perfil"
+        }
+      ]
+    },
+    {
+      "Sign": "copiar_grupo",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id"
+        },
+        {
+          "Sign": "nombre"
+        },
+        {
+          "Sign": "tipo",
+          "Value": "1.2.0"
+        }
+      ]
+    },
+    {
+      "Sign": "desactivar_usuario",
+      "Pattern": "Member",
+      "Member": {
+        "Sign": "id_usuario"
+      }
+    },
+    {
+      "Sign": "desactivar_usuarios",
+      "IsMassive": true,
+      "Pattern": "Member",
+      "Member": {
+        "Sign": "id_usuario"
+      }
+    },
+    {
+      "Sign": "eliminar_usuario_grupo",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id_usuario"
+        },
+        {
+          "Sign": "id_grupo"
+        }
+      ]
+    },
+    {
+      "Sign": "eliminar_usuarios_grupos",
+      "IsMassive": true,
+      "Pattern": "Node",
+      "Node": {
+        "Sign": "usuario_grupo",
+        "Members": [
+          {
+            "Sign": "id_usuario"
+          },
+          {
+            "Sign": "id_grupo"
+          }
+        ]
+      }
+    },
+    {
+      "Sign": "modificar_grupo",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "id_grupo"
+        },
+        {
+          "Sign": "nombre"
+        },
+        {
+          "Sign": "descripcion"
+        },
+        {
+          "Sign": "estado",
+          "Value": "1"
+        },
+        {
+          "Sign": "fecha_inicio_grupo",
+          "Value": null
+        },
+        {
+          "Sign": "fecha_finalizacion_grupo",
+          "Value": null
+        }
+      ]
+    },
+    {
+      "Sign": "modificar_usuario",
+      "Pattern": "Node",
+      "Node": {
+        "Sign": "usuario",
+        "Members": [
+          {
+            "Sign": "id_usuario"
+          },
+          {
+            "Sign": "nombre"
+          },
+          {
+            "Sign": "apellido"
+          },
+          {
+            "Sign": "clave"
+          },
+          {
+            "Sign": "email"
+          },
+          {
+            "Sign": "dato_adicional_1"
+          },
+          {
+            "Sign": "dato_adicional_2"
+          }
+        ]
+      }
+    },
+    {
+      "Sign": "obtener_usuario",
+      "Pattern": "Member",
+      "Member": {
+        "Sign": "id_usuario"
+      }
+    },
+    {
+      "Sign": "registrar_grupo",
+      "Pattern": "Members",
+      "Members": [
+        {
+          "Sign": "nombre"
+        },
+        {
+          "Sign": "descripcion"
+        },
+        {
+          "Sign": "estado",
+          "Value": "1"
+        },
+        {
+          "Sign": "id_tipo_grupo"
+        },
+        {
+          "Sign": "id_grupo"
+        },
+        {
+          "Sign": "fecha_inicio_grupo",
+          "Value": null
+        },
+        {
+          "Sign": "fecha_finalizacion_grupo",
+          "Value": null
+        }
+      ]
+    },
+    {
+      "Sign": "registrar_usuario",
+      "Pattern": "Nodes",
+      "Nodes": [
+        {
+          "Sign": "usuario",
+          "Members": [
+            {
+              "Sign": "id_usuario"
+            },
+            {
+              "Sign": "nombre"
+            },
+            {
+              "Sign": "apellido"
+            },
+            {
+              "Sign": "clave"
+            },
+            {
+              "Sign": "email"
+            },
+            {
+              "Sign": "dato_adicional_1"
+            },
+            {
+              "Sign": "dato_adicional_2"
+            }
+          ]
+        },
+        {
+          "Sign": "usuario_grupo",
+          "Members": [
+            {
+              "Sign": "administrador_grupo"
+            },
+            {
+              "Sign": "estado"
+            },
+            {
+              "Sign": "id_grupo"
+            },
+            {
+              "Sign": "perfil"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Sign": "registrar_usuarios",
+      "Pattern": "Container",
+      "Container": {
+        "Sign": "registro_usuario_grupo",
+        "Pattern": "Nodes",
+        "Nodes": [
+          {
+            "Sign": "usuario",
+            "Members": [
+              {
+                "Sign": "id_usuario"
+              },
+              {
+                "Sign": "nombre"
+              },
+              {
+                "Sign": "apellido"
+              },
+              {
+                "Sign": "clave"
+              },
+              {
+                "Sign": "email"
+              }
+            ]
+          },
+          {
+            "Sign": "usuario_grupo",
+            "Members": [
+              {
+                "Sign": "administrador_grupo"
+              },
+              {
+                "Sign": "estado"
+              },
+              {
+                "Sign": "id_grupo"
+              },
+              {
+                "Sign": "perfil"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "Responses": [
+    {
+      "Sign": "asignar_usuario_grupo_response",
+      "Pattern": "Member",
+      "Member": {
+        "Sign": "estado"
+      }
+    }
+  ]
+}

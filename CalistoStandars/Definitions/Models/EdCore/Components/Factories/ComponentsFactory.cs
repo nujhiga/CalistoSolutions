@@ -1,4 +1,6 @@
-﻿namespace CalistoStandars.Definitions.Models;
+﻿using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+
+namespace CalistoStandards.Definitions.Models.EdCore.Components.Factories;
 
 
 /// <summary>

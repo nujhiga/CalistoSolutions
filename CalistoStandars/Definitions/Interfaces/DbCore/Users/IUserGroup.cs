@@ -1,5 +1,4 @@
-﻿
-namespace CalistoStandars.Definitions.Interfaces;
+﻿namespace CalistoStandards.Definitions.Interfaces.DbCore.Users;
 
 public interface IUserGroup : IEquatable<IUserGroup>
 {

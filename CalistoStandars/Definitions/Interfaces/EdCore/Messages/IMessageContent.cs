@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Interfaces;
+﻿namespace CalistoStandards.Definitions.Interfaces.EdCore.Messages;
 [Obsolete]
 public interface IMessageContent
 {

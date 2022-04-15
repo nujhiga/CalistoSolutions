@@ -1,4 +1,4 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Entities;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
 
 namespace CalistoDbCore.U3FEntities;
 

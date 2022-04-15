@@ -1,17 +1,19 @@
-﻿using CalistoStandars.Definitions.Interfaces.DbCore.Persons;
-using CalistoStandars.Definitions.Interfaces.DbCore.Users;
+﻿using CalistoStandards.Definitions.Interfaces.DbCore.Persons;
 
-namespace CalistoStandars.Definitions.Models.DbCore.Persons;
+using CalistoStandards.Definitions.Interfaces.DbCore.Users;
+using CalistoStandards.Definitions.Structures.Cls;
+
+namespace CalistoStandards.Definitions.Models.DbCore.Persons;
 public abstract class PersonBase : IPersonBase
 {
     public KeyReference? Reference { get; set; }
     public object? PersonID { get; }
-    public PersonEntitySign? PersonEntity { get; set; }
+   // public PersonEntitySign? PersonEntity { get; set; }
     public ICampusUser? CampusUser { get; set; }
 
     protected PersonBase(object? personID) => PersonID = personID;
-    protected PersonBase(object? personID, PersonEntitySign? personEntity) : this(personID) => PersonEntity = personEntity;
-    protected PersonBase(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : this(personID, personEntity) => CampusUser = campusUser;
+    //protected PersonBase(object? personID, PersonEntitySign? personEntity) : this(personID) => PersonEntity = personEntity;
+    //protected PersonBase(object? personID, PersonEntitySign? personEntity, ICampusUser? campusUser) : this(personID, personEntity) => CampusUser = campusUser;
     
     public bool Equals(IPersonBase? other)
     {

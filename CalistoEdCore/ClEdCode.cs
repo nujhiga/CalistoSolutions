@@ -1,5 +1,6 @@
-﻿using CalistoEdCore.Services.Messages;
-using CalistoStandars.Definitions.Structures;
+﻿using CalistoEdCore.Services.Handlers;
+
+using CalistoStandards.Definitions.Structures.Cls;
 
 namespace CalistoEdCore;
 
@@ -9,10 +10,16 @@ public sealed class ClEdCore : IDisposable
 
     public readonly MessageQueueHandler MessageQueueHandler;
    
-    public ClEdCore(in HttpClient wsClient, ref (Action addCallback, Func<int> getCallback) callBacks)
+    public ClEdCore(in HttpClient wsClient)
     {
-        MessageQueueHandler = new MessageQueueHandler(in wsClient, ref callBacks);
+        MessageQueueHandler = new MessageQueueHandler(in wsClient);
     }
+
+
+    //public ClEdCore(KeyedDelegator)
+    //{
+    //    MessageQueueHandler = new MessageQueueHandler(in wsClient);
+    //}
 
     //public ClEdCore(in HttpClient wsClient)
     //{

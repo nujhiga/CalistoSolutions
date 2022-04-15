@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 
-namespace CalistoStandars.Definitions.Extensions;
+using CalistoStandards.Definitions.Interfaces.EdCore.Components;
+
+namespace CalistoStandards.Definitions.Extensions;
 
 //todo: 7422#2 - review reflection methods
 
@@ -40,7 +42,7 @@ public static class MessagesExtensions
 
     public static object? GetSourceValue<TSign>(this object source, TSign sign) where TSign : Enum
     {
-        var properties = source.GetInterfaceProperties<ElementAttr>();
+        var properties = ReflectionExtensions.GetInterfaceProperties <ElementAttr>( source );
 
         var nameProp = properties!.Single(p => p.GetCustomAttribute<ElementAttr>()!.SignEnum.Equals(sign));
         
@@ -54,7 +56,7 @@ public static class MessagesExtensions
 
     private static MemberAttr GetMemberAttribute<TSign>(this object source, TSign sign) where TSign : Enum
     {
-        var interProperties = source.GetInterfaceProperties<MemberAttr>();
+        var interProperties = ReflectionExtensions.GetInterfaceProperties <MemberAttr>( source );
 
         var signedProperty = interProperties.Single(p => p.GetCustomAttribute<MemberAttr>()!.MemberSign.Equals(sign));
 
@@ -67,7 +69,7 @@ public static class MessagesExtensions
     public static void SetSingleNodeMembersValues(this object source, in INode node)
     {
         //// Base Properties of the source object marked up as Node
-        var properties = source.GetInterfaceProperties<NodeAttr>().First();
+        var properties = ReflectionExtensions.GetInterfaceProperties <NodeAttr>( source ).First();
 
             //source.GetType().GetProperties().First(p => Attribute.IsDefined(p, typeof(NodeAttr)));
             //// Validates if exists or have at least an element
@@ -76,7 +78,7 @@ public static class MessagesExtensions
         foreach (var element in innerArray.Take(1))
         {
             ////Getting the properties marked up as Members on the interface of the source object
-            var interfaceProperties = element.GetInterfaceProperties<MemberAttr>();
+            var interfaceProperties = ReflectionExtensions.GetInterfaceProperties <MemberAttr>( element );
 
             if (interfaceProperties is null) continue;
 

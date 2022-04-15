@@ -1,4 +1,4 @@
-﻿namespace CalistoStandars.Definitions.Models.DbCore.Entities;
+﻿namespace CalistoStandards.Definitions.Models.DbCore.Entities;
 //public abstract class Entity : IEntity
 //{
 //    public object EntityID { get; set; }
