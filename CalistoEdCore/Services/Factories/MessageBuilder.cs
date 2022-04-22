@@ -26,9 +26,10 @@ internal sealed class MessageBuilder
             message = (TMessage)GetRequest(in sign, in source,  0);
         else if (typeof(TMessage) == typeof(IResponse))
             message = (TMessage)GetResponse(in sign, in source,  0);
-        
+        {}
         return message;
     }
+
 
 
     private static IResponse GetResponse(in MessageSign sign, in object source, in int currentMessageID)
@@ -49,8 +50,8 @@ internal sealed class MessageBuilder
 
     private static IRequest GetRequest(in MessageSign sign, in object source, in int currentMessageID)
     {
-        IRequestStructure rStruct = MessageStructProvider.GetRequestStruct(sign);
-        
+        IRequestStructure rStruct =  MessageStructProvider.GetRequestStruct(sign);
+        {}
         ClResult contentResult = ClResult.Invalid;
         
         using MessageSerializer serializer = new MessageSerializer(sign);
@@ -61,7 +62,7 @@ internal sealed class MessageBuilder
         {
             IBody body = MessageFactory.GetBodyContent(in source, in rStruct);
             serializedXml = serializer.Serialize(in body);
-            
+          
             contentResult = body.IsInvalidBody ? ClResult.Invalid : ClResult.Valid;
         }
         else

@@ -57,20 +57,20 @@ public static class MessageFactory
 
         if (rStruct.RequestBody!.ContentPattern is ClMessagePattern.MemberNode)
         {
-            if (MessagesExtensions.TryConvertBodyContent( rStruct.RequestBody , out BodyMemberNode memberNode))
+            if (rStruct.RequestBody.TryConvertBodyContent(out BodyMemberNode memberNode))
                  return GetMemberNodeBody(in source, ref memberNode);
 
             // bodyContent = GetMemberNodeBody(in source, ref memberNode);
         }
         else if (rStruct.RequestBody!.ContentPattern is ClMessagePattern.Nodes)
         {
-            if (MessagesExtensions.TryConvertBodyContent( rStruct.RequestBody , out BodyNodesMembers nodesMembers))
+            if (rStruct.RequestBody.TryConvertBodyContent(out BodyNodesMembers nodesMembers))
                 return GetNodesMembersBody(in source, ref nodesMembers);
             //bodyContent = GetNodesMembersBody(in source, ref nodesMembers);
         }
         else if (rStruct.RequestBody!.ContentPattern is ClMessagePattern.Members)
         {
-            if (MessagesExtensions.TryConvertBodyContent( rStruct.RequestBody , out BodyMembers bodyMembers))
+            if (rStruct.RequestBody.TryConvertBodyContent(out BodyMembers bodyMembers))
                 return GetMembersBody(in source, ref bodyMembers);
             
 
@@ -102,11 +102,11 @@ public static class MessageFactory
     /// <returns>A complete request message with the reference data.</returns>
     private static IBody GetMemberNodeBody(in object source, ref BodyMemberNode memberNode)
     {
-        MessagesExtensions.SetMemberValue( MessagesExtensions.GetMember( memberNode ) , in source);
+        memberNode.GetMember().SetMemberValue(in source);
 
-        INode node = MessagesExtensions.GetNode( memberNode );
+        INode node = memberNode.GetNode();
 
-        MessagesExtensions.SetSingleNodeMembersValues( source , in node);
+        source.SetSingleNodeMembersValues(in node);
 
         return memberNode;
     }
@@ -123,11 +123,11 @@ public static class MessageFactory
         foreach (INode node in nodesMembers.Nodes)
         {
             if (node.Sign is NodeSign.usuario_grupo)
-                MessagesExtensions.SetSingleNodeMembersValues( source , in node);
+                source.SetSingleNodeMembersValues(in node);
             else
             {
                 foreach (IMember member in node.Members)
-                    MessagesExtensions.SetMemberValue( member , in source);
+                    member.SetMemberValue(in source);
             }
         }
 
@@ -144,7 +144,7 @@ public static class MessageFactory
     private static IBody GetMembersBody(in object source, ref BodyMembers bodyMembers)
     {
         foreach (IMember member in bodyMembers.Members)
-            MessagesExtensions.SetMemberValue( member , in source);
+            member.SetMemberValue(in source);
 
         return bodyMembers;
     }

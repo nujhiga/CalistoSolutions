@@ -1,5 +1,5 @@
 ﻿namespace CalistoStandards.Definitions.Structures.Cls;
-public readonly struct Period : IComparable<Period>, IEquatable<Period>, IEquatable<DateTime>, IEquatable<string>, IEquatable<short>
+public readonly struct Period : IComparable<Period>, IConvertible, IEquatable<Period>, IEquatable<DateTime>, IEquatable<string>, IEquatable<short>
 {
     private readonly short _value;
 
@@ -152,4 +152,88 @@ public readonly struct Period : IComparable<Period>, IEquatable<Period>, IEquata
     public static bool operator >=(Period left, Period right) => left.CompareTo(right) >= 0;
     #endregion
 
+    TypeCode IConvertible.GetTypeCode()
+    {
+        return _value.GetTypeCode();
+    }
+
+    bool IConvertible.ToBoolean(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToBoolean(provider);
+    }
+
+    byte IConvertible.ToByte(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToByte(provider);
+    }
+
+    char IConvertible.ToChar(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToChar(provider);
+    }
+
+    DateTime IConvertible.ToDateTime(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToDateTime(provider);
+    }
+
+    decimal IConvertible.ToDecimal(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToDecimal(provider);
+    }
+
+    double IConvertible.ToDouble(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToDouble(provider);
+    }
+
+    short IConvertible.ToInt16(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToInt16(provider);
+    }
+
+    int IConvertible.ToInt32(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToInt32(provider);
+    }
+
+    long IConvertible.ToInt64(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToInt64(provider);
+    }
+
+    sbyte IConvertible.ToSByte(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToSByte(provider);
+    }
+
+    float IConvertible.ToSingle(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToSingle(provider);
+    }
+
+    string IConvertible.ToString(IFormatProvider? provider)
+    {
+        return _value.ToString(provider);
+    }
+
+    object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToType(conversionType, provider);
+    }
+
+    ushort IConvertible.ToUInt16(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToUInt16(provider);
+    }
+
+    uint IConvertible.ToUInt32(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToUInt32(provider);
+    }
+
+    ulong IConvertible.ToUInt64(IFormatProvider? provider)
+    {
+        return ((IConvertible)_value).ToUInt64(provider);
+    }
 }

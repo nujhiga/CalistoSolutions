@@ -1,11 +1,27 @@
 ﻿namespace CalistoStandards.Definitions.Enumerations;
-[Obsolete("Review it")]
-public enum ClParameterType
+
+
+
+public enum ClParamValueType
 {
     None,
     Campus,
+    StudentPeriod,
     Period,
+    Periods,
+    User,
     Users,
-    Academics,
+    StudentCareer,
+    StudentCampus,
+    Career,
+    Careers,
+    Commission,
+    Commissions,
+    Regular,
+    Ingress,
     Regularity,
+    Regularities,
+    ConvCod,
+    ConvCods
 }
+

@@ -117,24 +117,24 @@ public sealed class KeyedDelegator
     public bool RemoveDelegate(string methodName) => _delegates.TryRemoveByName(methodName);
     
 
-    public void Execute(Delegate deleg)
+    public void Invoke(Delegate deleg)
     {
         _delegates.TryGetValue(deleg.Method.GetHashCode(), out deleg);
         deleg?.DynamicInvoke();
     }
-    public void Execute(Delegate deleg, params object[] invokeParams)
+    public void Invoke(Delegate deleg, params object[] invokeParams)
     {
         _delegates.TryGetValue(deleg.Method.GetHashCode(), out deleg);
         deleg?.DynamicInvoke(invokeParams);
     }
-    public void Execute(string methodName)
+    public void Invoke(string methodName)
     {
         Delegate deleg = _delegates.GetByName(methodName);
         if (deleg is null) return;
         deleg.DynamicInvoke();
 
     }
-    public void Execute(string methodName, params object[] invokeParams)
+    public void Invoke(string methodName, params object[] invokeParams)
     {
         Delegate deleg = _delegates.GetByName(methodName);
         if (deleg is null) return;
@@ -143,32 +143,32 @@ public sealed class KeyedDelegator
     }
     
 
-    public object ExecuteValue(Delegate deleg)
+    public object InvokeValue(Delegate deleg)
     {
         _delegates.TryGetValue(deleg.Method.GetHashCode(), out deleg);
         return deleg?.DynamicInvoke()!;
     }
-    public object ExecuteValue(Delegate deleg, params object[] invokeParams)
+    public object InvokeValue(Delegate deleg, params object[] invokeParams)
     {
         _delegates.TryGetValue(deleg.Method.GetHashCode(), out deleg);
         return deleg?.DynamicInvoke(invokeParams)!;
     }
-    public object ExecuteValue(string methodName)
+    public object InvokeValue(string methodName)
     {
         Delegate deleg = _delegates.GetByName(methodName);
         return deleg is null ? null! : deleg.DynamicInvoke()!;
     }
-    public object ExecuteValue(string methodName, params object[] invokeParams)
+    public object InvokeValue(string methodName, params object[] invokeParams)
     {
         Delegate deleg = _delegates.GetByName(methodName);
         return deleg is null ? null! : deleg.DynamicInvoke(invokeParams)!;
     }
     
 
-    public TValue Execute<TValue>(Delegate deleg) => (TValue)ExecuteValue(deleg);
-    public TValue Execute<TValue>(Delegate deleg, params object[] invokeParams) => (TValue)ExecuteValue(deleg, invokeParams);
-    public TValue Execute<TValue>(string methodName) => (TValue)ExecuteValue(methodName);
-    public TValue Execute<TValue>(string methodName, params object[] invokeParams) => (TValue)ExecuteValue(methodName, invokeParams);
+    public TValue Invoke<TValue>(Delegate deleg) => (TValue)InvokeValue(deleg);
+    public TValue Invoke<TValue>(Delegate deleg, params object[] invokeParams) => (TValue)InvokeValue(deleg, invokeParams);
+    public TValue Invoke<TValue>(string methodName) => (TValue)InvokeValue(methodName);
+    public TValue Invoke<TValue>(string methodName, params object[] invokeParams) => (TValue)InvokeValue(methodName, invokeParams);
 
 
 }

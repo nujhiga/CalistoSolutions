@@ -24,15 +24,28 @@ public sealed class GatewayProvider
 
     private bool _disposed;
 
-    private CampusTarget _currentCampus;
-
-    public CampusTarget CurrentCampus
+    private Period[] _selectedPeriods;
+    public Period[] SelectedPeriods
     {
-        get => _currentCampus;
+        get => _selectedPeriods;
+        set => _selectedPeriods = value;
+    }
+
+    private Period _selectedPeriod;
+    public Period SelectedPeriod
+    {
+        get => _selectedPeriod;
+        set => _selectedPeriod = value;
+    }
+
+    private CampusTarget _selectedCampus;
+    public CampusTarget SelectedCampus
+    {
+        get => _selectedCampus;
         set
         {
-            _currentCampus = value;
-            _kyDelegator.Execute(nameof(ClEnvironment.SetHttpClientCredentials));
+            _selectedCampus = value;
+            _kyDelegator.Invoke(nameof(ClEnvironment.SetHttpClientCredentials));
         }
     }
 
@@ -64,9 +77,9 @@ public sealed class GatewayProvider
     public string GetCmpUsAccess() => "webmaster"; // todo: implement safe access :: tdref:230322-5
     public string GetCmpPwAccess(ClCampus cSource) => GetPwCampusAccess((int)cSource);
     public string GetPwAccess(ClCampus cSource) => "ZndNaApxDt"; //GetPwAccess((int)cSource);
-    public string GetPwAccess() => "ZndNaApxDt"; //GetPwAccess(CurrentCampus.Source);
+    public string GetPwAccess() => "ZndNaApxDt"; //GetPwAccess(SelectedCampus.Source);
     public string GetUsAccess(ClCampus cSource) => "webservice"; //GetUsAccess((int)cSource);
-    public string GetUsAccess() => "webservice"; //GetUsAccess(CurrentCampus.Source) 
+    public string GetUsAccess() => "webservice"; //GetUsAccess(SelectedCampus.Source) 
     public string Address(ClCampus cSource) => GetAddress((int)cSource);
 
     public string GetSpAddress(ClCampus? cSource) =>

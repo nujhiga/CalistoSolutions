@@ -60,6 +60,10 @@ public static class ClConsts
     {
         public const string SetHttpCredentials = "SetHttpClientCredentials";
         public const string GetClient = nameof(GetClient);
+        public const string GetCurrentDbRequestCount = nameof(GetCurrentDbRequestCount);
+        public const string SetCurrentDbRequestCount = nameof(SetCurrentDbRequestCount);
+        
+        public const string GetCampusTarget = nameof(GetCampusTarget);
     }
 
 

@@ -1,5 +1,5 @@
 ﻿namespace CalistoDbCore.Expressions.Builders;
-public enum DbRegularity
+public enum ClRegularity
 {
     None,
     Regular,

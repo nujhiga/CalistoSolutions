@@ -46,7 +46,9 @@ public sealed class ClEnvironment : IDisposable, IKeyedDelegation
     public readonly GatewayProvider Gateway = new();
 
     public static readonly HttpClient WsClient = new();
-    private static HttpClient GetClient() => WsClient;
+
+
+
 
     public ClDbCore? DbCore { get; private set; }
     public ClEdCore? EdCore { get; private set; }
@@ -59,15 +61,22 @@ public sealed class ClEnvironment : IDisposable, IKeyedDelegation
     {
         KyDelegator.SetupDelegate(SetHttpClientCredentials);
         KyDelegator.SetupDelegate(GetClient);
+        KyDelegator.SetupDelegate(GetCampusTarget);
+        KyDelegator.SetupDelegate(GetSelectedPeriod);
+        KyDelegator.SetupDelegate(GetSelectedPeriods);
     }
 
+    private static HttpClient GetClient() => WsClient;
+    private CampusTarget GetCampusTarget() => Gateway.SelectedCampus;
+    private Period GetSelectedPeriod() => Gateway.SelectedPeriod;
+    private Period[] GetSelectedPeriods() => Gateway.SelectedPeriods;
 
 
     //  private (Action add, Func<int> get) _addGetCallbacks;
 
     #region Calisto DbCore
 
-    private void InitDbCore() => DbCore = new ClDbCore();
+    public void InitDbCore() => DbCore = new ClDbCore();
 
     public async Task ResetDbCore()
     {
@@ -88,7 +97,7 @@ public sealed class ClEnvironment : IDisposable, IKeyedDelegation
         const string Basic = "Basic";
 
         GatewayProvider gate = Gateway;
-        CampusTarget campus = gate.CurrentCampus;
+        CampusTarget campus = gate.SelectedCampus;
 
         string preAuthString = GetPreAuthString(in gate);
         string authString = Convert.ToBase64String(Encoding.Default.GetBytes(preAuthString));
@@ -99,7 +108,7 @@ public sealed class ClEnvironment : IDisposable, IKeyedDelegation
 
     private static string GetPreAuthString(in GatewayProvider gate)
     {
-        CampusTarget campus = gate.CurrentCampus;
+        CampusTarget campus = gate.SelectedCampus;
 
         StringBuilder sb = new();
         sb.Append(gate.GetUsAccess(campus.Source));

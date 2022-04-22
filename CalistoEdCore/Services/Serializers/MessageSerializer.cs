@@ -1,5 +1,7 @@
 ﻿using System.Text;
+
 using CalistoEdCore.Services.Providers;
+
 using CalistoStandards.Definitions.Interfaces.EdCore.Components;
 using CalistoStandards.Definitions.Models.EdCore.Components;
 
@@ -101,19 +103,19 @@ public sealed class MessageSerializer : IDisposable
 
         if (body.ContentPattern is ClMessagePattern.Members)
         {
-            _ = MessagesExtensions.TryConvertBodyContent( body , out BodyMembers bodyContent);
+            _ = body.TryConvertBodyContent(out BodyMembers bodyContent);
             AppendMembers(bodyContent.Members);
         }
         else if (body.ContentPattern is ClMessagePattern.Nodes)
         {
-            _ = MessagesExtensions.TryConvertBodyContent( body , out BodyNodesMembers bodyContent);
+            _ = body.TryConvertBodyContent(out BodyNodesMembers bodyContent);
 
             foreach (INode node in bodyContent.Nodes)
                 AppendNode(in node);
         }
         else if (body.ContentPattern is ClMessagePattern.MemberNode)
         {
-            _ = MessagesExtensions.TryConvertBodyContent( body , out BodyMemberNode bodyContent);
+            _ = body.TryConvertBodyContent(out BodyMemberNode bodyContent);
 
             (IMember member, INode node) = bodyContent.SingleMemberSingleNode;
 

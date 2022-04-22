@@ -49,7 +49,7 @@
 //        const string Basic = "Basic";
 
 //        GatewayProvider gate = ClEnvironment.Instance.Gateway;
-//        CampusTarget campus = gate.CurrentCampus;
+//        CampusTarget campus = gate.SelectedCampus;
 
 //        string preAuthString = GetPreAuthString(in gate);
 //        string authString = Convert.ToBase64String(Encoding.Default.GetBytes(preAuthString));
@@ -60,7 +60,7 @@
 
 //    private static string GetPreAuthString(in GatewayProvider gate)
 //    {
-//        CampusTarget campus = gate.CurrentCampus;
+//        CampusTarget campus = gate.SelectedCampus;
 
 //        StringBuilder sb = new();
 //        sb.Append(gate.GetUsAccess(campus.Source));

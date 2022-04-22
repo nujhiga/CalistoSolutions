@@ -57,7 +57,7 @@ public abstract class MessageHandler
 
         httpReqMsg.Content = content;
 
-        HttpClient client = _delegator.Execute<HttpClient>(ClConsts.ClEnviroment.GetClient);
+        HttpClient client = _delegator.Invoke<HttpClient>(ClConsts.ClEnviroment.GetClient);
 
         using HttpResponseMessage httpResp = await client.SendAsync
             (httpReqMsg, HttpCompletionOption.ResponseContentRead);

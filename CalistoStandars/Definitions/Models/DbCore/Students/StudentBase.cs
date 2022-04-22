@@ -2,15 +2,15 @@
 using CalistoStandards.Definitions.Models.DbCore.Persons;
 
 namespace CalistoStandards.Definitions.Models.DbCore.Students;
-public abstract class StudentBase : PersonBase, IStudentBase
+public class StudentBase : PersonBase, IStudentBase
 {
     public bool SingleCareer => CareersInfo?.Count == 1;
     public ICareerInfo? Career => SingleCareer ? CareersInfo?[0] : null;
     
     public IList<ICareerInfo>? CareersInfo { get; set; }
     public IList<ICommissionInfo>? CommissionsInfo { get; set; }
-    
-    protected StudentBase(object? personID) : base(personID)
+
+    public StudentBase(object? personID) : base(personID)
     {
     }
     //protected StudentBase(object? personID, PersonEntitySign? personEntity) : base(personID, personEntity)

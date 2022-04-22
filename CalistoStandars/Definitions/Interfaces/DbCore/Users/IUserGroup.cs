@@ -19,4 +19,6 @@ public interface IUserGroup : IEquatable<IUserGroup>
     bool? IsAdmingGroup { get; set; }
 
     EdGroupType? GroupType { get; set; }
+
+
 }

@@ -10,5 +10,5 @@ public class NominalEntity : INominalEntity
     public double? Documento { get; set; }
     public DateTime? FecNac { get; set; }
     public string? Mail { get; set; }
-    public char? SexoId { get; set; }
+    public int? SexoId { get; set; }
 }

@@ -29,6 +29,7 @@ public sealed class MessageQueueHandler : MessageHandler, IDisposable
 
         return true;
     }
+
     public bool RequestResponsesEnqueue(in MessageSign[] signs, in object[] sources)
     {
         if (signs.Length != sources.Length) return false;

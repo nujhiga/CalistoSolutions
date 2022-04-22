@@ -113,10 +113,12 @@ public static class ReflectionExtensions
         (this object source, Func<PropertyInfo, bool> where = null!) where TAttr : Attribute
     {
         var (type, _) = source.GetTypeDetails();
+        {}
+
 
         IEnumerable<PropertyInfo> properties =
             type.GetPropertiesWith<TAttr>();
-
+        {}
         return where is null ? properties : properties.Where(where);
     }
 
@@ -144,7 +146,7 @@ public static class ReflectionExtensions
     {
         Type srcType = source.GetType();
         bool isInterface = srcType.IsInterface;
-
+        {}
         Type type = isInterface ? srcType.GetInterfaceType() : srcType;
 
         return (type, isInterface);

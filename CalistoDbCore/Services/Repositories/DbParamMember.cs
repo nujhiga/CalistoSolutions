@@ -1,16 +1,47 @@
-﻿namespace CalistoDbCore.Services.Repositories;
+﻿using System.Reflection.Metadata;
+using CalistoStandards.Definitions.Structures.Cls;
 
-//public abstract record DbParamMember(Type MemberType);
+namespace CalistoDbCore.Services.Repositories;
 
-public sealed class DbParamMember<TValue> //(TMember Member/*, Type MemberType*/) //: DbParamMember(MemberType)
+
+
+
+
+public sealed class DbParamMember
 {
-    public DbParamMember(TValue value)
+    public DbParamMember(object value)
     {
         Value = value;
     }
+    public DbParamMember()
+    {
+        
+    }
+    public DbParamMember(object value, string dbTargetField)
+    {
+        Value = value;
+        Values = null!;
+        DbTargetField = dbTargetField;
+    }
 
+    public DbParamMember(object[] values, string dbTargetField)
+    {
+        Values = values;
+        Value = null!;
+        DbTargetField = dbTargetField;
+    }
 
-    public TValue? Value    { get; set; }
-    public bool    HasValue => Value is { };
-    public bool    IsArray  => HasValue && Value is TValue[] {Length: > 1};
+    public string DbTargetField { get; set; }
+    public string[] DbTargetsField { get; set; }
+
+    public ClParamValueAssert ClParamValueAssert { get; set; }
+    public ClParamValueAssert[] ParamsConditions { get; set; }
+
+    //public ParamNextCondition ParamNextCondition { get; set; }
+
+    public object? Value { get; set; }
+    public object?[] Values { get; set; }
+
+    public bool UniqueValue => Value is { };
+    public bool ArrayValues => Values is { Length: > 0 };
 }

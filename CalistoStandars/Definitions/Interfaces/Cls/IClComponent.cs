@@ -4,6 +4,7 @@ namespace CalistoStandards.Definitions.Interfaces.Cls;
 
 public interface IClComponent
 {
+
     object? Value { get; set; }
     Enum? ComponentType { get; set; }
 }

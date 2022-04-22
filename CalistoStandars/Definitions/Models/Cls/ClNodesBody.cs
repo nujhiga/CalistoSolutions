@@ -16,4 +16,9 @@ public sealed class ClNodesBody : ClBody, IClNodesBody
     {
         Nodes = nodes;
     }
+    public ClNodesBody(IEnumerable<IClNode> nodes, bool isContainer) : base(ClMessagePattern.Nodes)
+    {
+        Nodes = nodes;
+        IsContainer = isContainer;
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace CalistoStandards.Definitions.Extensions;
 
@@ -19,6 +20,9 @@ public static class EnumerableExtensions
         Collection,
         Dictionary
     }
+
+    public static IEnumerable<T> WithOutNulls<T>(this IEnumerable<T> source) => source.Where(x => x is not null);
+
 
     public static bool NullOrEmpty<T>(this IEnumerable<T> source) => source is null || !source.Any();
 

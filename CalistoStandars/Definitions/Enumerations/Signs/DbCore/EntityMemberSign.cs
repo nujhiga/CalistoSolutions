@@ -22,5 +22,9 @@ public enum EntityMemberSign
     Suspcuatri,
     MotBaja,
     Mail,
-    SexoId
+    SexoId,
+    CuatrIngreso,
+    Cuatrimrestre,
+    Campus,
+    ConvCod
 }

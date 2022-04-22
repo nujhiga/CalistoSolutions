@@ -1,4 +1,6 @@
-﻿namespace CalistoStandards.Definitions.Interfaces.DbCore.Users;
+﻿using System.Reflection;
+
+namespace CalistoStandards.Definitions.Interfaces.DbCore.Users;
 
 public interface ICampusUser
 {
@@ -7,7 +9,7 @@ public interface ICampusUser
     
     [MemberAttr(MemberSign.id_usuario, isNullable: false)]
     object? UserID { get; set; }
-
+    
     
     [MemberAttr(MemberSign.clave, isNullable: false)]
     string? Password { get; set; }

@@ -1,43 +1,44 @@
 ﻿
+using CalistoDbCore.Expressions.Builders;
+using CalistoDbCore.Services.Repositories;
+using CalistoDbCore.U3FEntities;
 using CalistoEnvironment;
 using CalistoStandards.Definitions;
+using CalistoStandards.Definitions.Attributes;
 using CalistoStandards.Definitions.Structures.Cls;
 using CalistoStandards.Definitions.Enumerations;
+using CalistoStandards.Definitions.Extensions;
 using CalistoStandards.Definitions.Factories.Cls;
+using CalistoStandards.Definitions.Interfaces.DbCore.Persons;
+using CalistoStandards.Definitions.Models.DbCore.Persons;
+using CalistoStandards.Definitions.Models.DbCore.Students;
+using CalistoStandards.Definitions.Models.DbCore.Users;
 using CalistoStandards.Definitions.Models.EdCore.Messages;
 using CalistoStandards.Providers;
 
 ClEnvironment clEnvironment = ClEnvironment.Instance;
 KeyedDelegator delegator = KeyedDelegator.Instance;
+DbRepository repo = new DbRepository();
 
 clEnvironment.InitEdCore();
 
-CampusTarget campus = clEnvironment.Gateway.CreateNewTarget(ClCampus.U3F);
+CampusTarget campus = clEnvironment.Gateway.CreateNewTarget(ClCampus.ULP);
 
-clEnvironment.Gateway.CurrentCampus = campus;
+Period[] periods = { new (20221), new (20222) };
 
-
-var b = ClMessageStructFactory.GetMessageStruct<IClRequest>();
-
-//ClMessageStructFactory.TEst();
+int?[] careers = { 85, 69 };
 
 
 
-//var f = delegator.Execute<HttpClient>(ClConsts.ClEnviroment.GetClient);
+clEnvironment.Gateway.SelectedCampus = campus;
 
+clEnvironment.InitDbCore();
 
+using ClParameter clParam = ClParameterFactory.GetSyncCareers(campus.Source, ClRegularity.Ingress, periods, careers);
 
-//var repo = new CalistoDbCore.Services.Repositories.DbRepository(campus, new Period[] { new(20221) });
+var res = await repo.ExecuteRequestAsync<VisAlu>(clParam, ClCacheOptions.Min);
 
-{ }
-
-
-{ }
-
-//await repo.ExecuteRequestAsync<U3fAlu>(DbRequestSign.GetNominals, SelectionDepth.Simple, ExecutionOptions.NoCache);
-
-{ }
-
+{}
 
 //IPerson per = new Person() { UserID = 123880, FieldName = "per", LastName = "jajajaj", Email = "fff@aaa.com" };
 //IPerson per3 = new Person() { UserID = 1233, Password = "123", FieldName = "per3", LastName = "jajajaj", Email = "fff@aaa.com" };

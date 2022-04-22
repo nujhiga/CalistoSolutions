@@ -1,174 +1,231 @@
-﻿using System.Reflection;
-using CalistoDbCore.Expressions.Factories;
-using CalistoDbCore.Expressions.Factories.Helpers;
-using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
+﻿
+using System.Reflection.Metadata;
+using System.Windows.Markup;
 
-namespace CalistoDbCore.Expressions.Builders;
+using CalistoDbCore.Services.Repositories;
 
-internal static class ExpressionsExtensions
+using CalistoStandards.Definitions.Structures.Cls;
+
+internal static class ExpressionExtensions
 {
-    #region Base Factory
-
-    private const string ParamMarker = "p";
-
-
-    internal static MethodInfo? GetContainsMethod(this Type type) =>
-        type.GetMethod(nameof(Enumerable.Contains), new[] {type});
-
-
-    internal static ExpressionPackage AsPackagedExpressions(this object source, Enum fieldSign, bool nullable = false)
+    internal static ExpressionType ToExpressionType(this ClParamValueAssert paramValueAssert)
     {
-        ConstantExpression constant = source.AsConstantExpression(nullable);
-
-        ParameterExpression parameter = source.GetType().AsParameterExpression();
-
-        MemberExpression propertyOrField =
-            parameter.AsPropertyOrFieldExpression(fieldSign.AsString());
-
-        return new ExpressionPackage(constant, parameter, propertyOrField);
-    }
-
-    internal static MemberExpression AsPropertyOrFieldExpression(this Expression param, string target) =>
-        Expression.PropertyOrField(param, target);
-
-    internal static MemberExpression AsPropertyExpression(this Expression param, PropertyInfo pinfo) =>
-        Expression.Property(param, pinfo);
-
-    internal static MemberAssignment AsBindExpression(this MemberInfo minfo, Expression expression) =>
-        Expression.Bind(minfo, expression);
-
-    internal static MemberInitExpression AsInitExpression(this NewExpression            nExpression,
-                                                          IEnumerable<MemberAssignment> members) =>
-        Expression.MemberInit(nExpression, members);
-
-    internal static NewExpression AsNewExpression(this Type newInstanceType) => Expression.New(newInstanceType);
-
-    internal static ParameterExpression AsParameterExpression(this Type parameterType) =>
-        Expression.Parameter(parameterType, ParamMarker);
-
-    internal static ConstantExpression AsConstantExpression(this object value, bool asNullable = false) =>
-        !asNullable ? Expression.Constant(value) : Expression.Constant(value, value.GetType());
-
-    #endregion
-
-    #region Binary Factory
-
-    internal static Expression<Func<TEntity, bool>> AsEqualityExpression<TEntity, TSign>
-        (this object value, TSign fieldSign, ExpressionType expType, bool nullable = false)
-        where TSign : struct, Enum
-        where TEntity : class, IEntity
-    {
-        LambdaExpressionPackage package = value.AsEqualityLambdaPackage(fieldSign, expType, nullable);
-
-        return package.AsLambdaExpression<TEntity>();
-    }
-
-    internal static Expression<Func<TEntity, bool>> AsAndAlsoExpression<TEntity, TxSign, TySign>
-        (this object[] values, TxSign xSign, TySign ySign)
-        where TxSign : struct, Enum
-        where TySign : struct, Enum
-        where TEntity : class, IEntity
-    {
-        var xtuple = (values[0], xSign);
-        var ytuple = (values[1], ySign);
-
-        LambdaExpressionPackage[] lambdaPacks = xtuple.AsAndAlsoLambdaExpressionsPackage(ytuple);
-
-        return lambdaPacks.AsAndAlsoVisitors<TEntity>();
-    }
-
-    internal static Expression<Func<TEntity, bool>> AsContainsExpression<TEntity, TSign>
-        (this object values, TSign fielSign)
-        where TSign : struct, Enum
-    {
-        MethodInfo methodInfo = values.GetType().GetContainsMethod()!;
-        var (constant, param, value) = values.AsPackagedExpressions(fielSign);
-
-        MethodCallExpression callExpression = Expression.Call(constant, methodInfo, value);
-
-        return Expression.Lambda<Func<TEntity, bool>>(callExpression, param);
-    }
-
-    public static Expression<Func<TEntity, TEntity>> AsSelectExpression<TEntity>(this EntityMemberSign[] selectSigns)
-    {
-        var type = typeof(TEntity);
-
-        ParameterExpression xParameter = type.AsParameterExpression();
-
-        NewExpression xNew = type.AsNewExpression();
-
-        var bindings = selectSigns.Select(sgName =>
+        ExpressionType exType = paramValueAssert switch
         {
-            PropertyInfo pinfo = type.GetProperty(sgName.AsString())!;
+            ClParamValueAssert.Equal => ExpressionType.Equal,
+            ClParamValueAssert.NotEqual => ExpressionType.NotEqual,
+            ClParamValueAssert.Contains => ExpressionType.OnesComplement,
+            _ => ExpressionType.Default
+        };
 
-            MemberExpression xMember = xParameter.AsPropertyExpression(pinfo);
+        return exType;
+    }
+    internal static Expression ToExpression<TEntity>(this ClParamValue paramValue, bool nullableValue = false)
+    {
+        if (paramValue.AsValueCode is not { } valueCode) return null!;
+        if (paramValue.ValueAssert is not { } valueAssert) return null!;
 
-            return pinfo.AsBindExpression(xMember);
-        });
+        if (paramValue.Value is null) return null!;
 
-        MemberInitExpression xInit = xNew.AsInitExpression(bindings);
+        ExpressionType exType = valueAssert.ToExpressionType();
+        string targetName = paramValue.StrValueSign;  //valueSign.ToString(); //use mapping provider
 
-        Expression<Func<TEntity, TEntity>> expression =
-            Expression.Lambda<Func<TEntity, TEntity>>(xInit, xParameter);
+        { }
+
+        Expression expression = exType is ExpressionType.Equal or ExpressionType.NotEqual
+            ? ToEqualityExpression<TEntity>(valueCode, paramValue.Value, targetName, exType, nullableValue)
+            : ToContainsExpression<TEntity>(valueCode, paramValue.Value, targetName, nullableValue);
+
+        return expression;
+    }
+    internal static Expression ToEqualityExpression<TEntity>(TypeCode asValueCode, object value, string targetName, ExpressionType exType, bool nullable)
+    {
+        Expression expression = asValueCode switch
+        {
+            TypeCode.String => ExpressionFactory.GetEqualityEx<TEntity, string>
+                (targetName, exType, value.AsTypedValue<string>(), nullable),
+
+            TypeCode.Char => ExpressionFactory.GetEqualityEx<TEntity, char>
+                (targetName, exType, value.AsTypedValue<char>(), nullable),
+
+            TypeCode.Int32 when nullable => ExpressionFactory.GetEqualityEx<TEntity, int?>
+                (targetName, exType, value.AsTypedValue<int?>(), true),
+
+            TypeCode.Int32 when !nullable => ExpressionFactory.GetEqualityEx<TEntity, int>
+                (targetName, exType, value.AsTypedValue<int>()),
+
+            TypeCode.Double => ExpressionFactory.GetEqualityEx<TEntity, double>
+                (targetName, exType, value.AsTypedValue<double>(), nullable),
+
+            TypeCode.DateTime => ExpressionFactory.GetEqualityEx<TEntity, DateTime>
+                (targetName, exType, value.AsTypedValue<DateTime>(), nullable),
+
+            _ => null!
+        };
 
         return expression;
     }
 
-    #endregion
-
-    #region Lambdas Factory
-
-    private static LambdaExpressionPackage[] AsAndAlsoLambdaExpressionsPackage<TxValue, TxSign, TyValue, TySign>
-    (this (TxValue xvalue, TxSign xsign) xValue,
-     (TyValue yvalue, TySign ysign)      yValue)
-        where TySign : struct, Enum
-        where TxSign : struct, Enum
+    internal static Expression ToContainsExpression<TEntity>(TypeCode asValueCode, object values, string targetName, bool nullable)
     {
-        LambdaExpressionPackage xlambda = xValue.xvalue.AsEqualityLambdaPackage(xValue.xsign, ExpressionType.Equal);
-        LambdaExpressionPackage ylambda = yValue.yvalue.AsEqualityLambdaPackage(yValue.ysign, ExpressionType.Equal);
+        Expression expression = asValueCode switch
+        {
+            TypeCode.String => ExpressionFactory.GetContainsEx<TEntity, string>
+                (targetName, nullable, values.AsTypedArray<string>()),
 
-        return new[] {xlambda, ylambda};
+            TypeCode.Char => ExpressionFactory.GetContainsEx<TEntity, char>
+                (targetName, nullable, values.AsTypedArray<char>()),
+
+            TypeCode.Int32 when nullable => ExpressionFactory.GetContainsEx<TEntity, int?>
+                (targetName, nullable, values.AsTypedArray<int?>()),
+
+            TypeCode.Int32 when !nullable => ExpressionFactory.GetContainsEx<TEntity, int>
+                (targetName, nullable, values.AsTypedArray<int>()),
+
+            TypeCode.Double => ExpressionFactory.GetContainsEx<TEntity, double>
+                (targetName, nullable, values.AsTypedArray<double>()),
+
+            TypeCode.DateTime => ExpressionFactory.GetContainsEx<TEntity, DateTime>
+                (targetName, nullable, values.AsTypedArray<DateTime>()),
+
+            _ => null!
+        };
+
+        return expression;
     }
 
-    private static Expression<Func<TEntity, bool>> AsAndAlsoVisitors<TEntity>
-        (this LambdaExpressionPackage[] lambdasPackages)
-        where TEntity : class, IEntity
+    //private static T AsTypedValue<T>(this object value)
+    //{
+    //    if (value is null) return default!;
+    //    { }
+    //    return (T) Convert.ChangeType(value, typeof(T));
+    //}
+    private static T AsTypedValue<T>(this object value)
     {
-        var parameter = Expression.Parameter(typeof(TEntity));
+        var t = typeof(T);
 
-        var xlambda = lambdasPackages[0].AsLambdaExpression<TEntity>();
-        var ylambda = lambdasPackages[1].AsLambdaExpression<TEntity>();
+        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+        {
+            if (value == null)
+            {
+                return default(T);
+            }
 
-        var leftVisitor = new ReplaceExpressionVisitor(xlambda.Parameters[0], parameter);
-        var left        = leftVisitor.Visit(xlambda.Body);
+            t = Nullable.GetUnderlyingType(t);
+        }
 
-        var rightVisitor = new ReplaceExpressionVisitor(ylambda.Parameters[0], parameter);
-        var right        = rightVisitor.Visit(ylambda.Body);
-
-        return Expression.Lambda<Func<TEntity, bool>>(
-            Expression.AndAlso(left, right), parameter);
+        return (T)Convert.ChangeType(value, t);
     }
 
-    private static LambdaExpressionPackage AsEqualityLambdaPackage<TValue, TSign>
-        (this TValue value, TSign fieldSign, ExpressionType expType, bool nullable = false)
-        where TSign : struct, Enum
+
+
+
+
+    private static T?[] AsTypedArray<T>(this object values)
     {
-        var (constant, parameter, property) = value!.AsPackagedExpressions(fieldSign, nullable);
-
-        BinaryExpression equality = expType == ExpressionType.Equal
-            ? Expression.Equal(property, constant)
-            : Expression.NotEqual(property, constant);
-
-        return new LambdaExpressionPackage(equality, parameter);
+        {}
+        if (values is IEnumerable<Period> periods)
+            return (periods.PeriodsToStringArray() as T[])!;
+        {}
+        if (values is not IEnumerable<T?> enumeratedValues) return null!;
+        {}
+        if (!enumeratedValues.TryGetNonEnumeratedCount(out int _)) return null!;
+        { }
+        return enumeratedValues.ToArray()!;
     }
 
-    private static Expression<Func<TEntity, bool>> AsLambdaExpression<TEntity>
-        (this LambdaExpressionPackage package)
-        where TEntity : class, IEntity
-    {
-        var (expression, parameter) = package;
-        return Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
-    }
-
-    #endregion
 }
+
+internal static class ClDbParameterExtensions
+{
+    internal static Expression[] ToExpressions<TEntity>(this ClParameter parameter)
+    {
+        IEnumerable<Expression> expressions = parameter.RequestSign switch
+        {
+            DbRequestSign.GetSyncCareers => parameter.ToSyncCareerExpressions<TEntity>(),
+
+
+
+            _ => Enumerable.Empty<Expression>()
+        };
+
+        return expressions.WithOutNulls().ToArray();
+    }
+
+    private static IEnumerable<Expression> ToSyncCareerExpressions<TEntity>(this ClParameter parameter)
+    {
+        yield return parameter.ToExpression<TEntity>(ClParamValueType.Regularity);
+        yield return parameter.ToExpression<TEntity>(ClParamValueType.StudentCareer);
+        yield return parameter.ToExpression<TEntity>(ClParamValueType.StudentPeriod);
+        yield return parameter.ToExpression<TEntity>(ClParamValueType.StudentCampus);
+    }
+
+    internal static Expression<Func<TEntity, TEntity>> ToSelectExpression<TEntity>(this ClParameter parameter) =>
+        ExpressionFactory.GetSelectEx<TEntity>(parameter.SelectFields.ToArray());
+
+
+    internal static Expression ToExpression<TEntity>(this ClParameter parameter, ClParamValueType valType)
+    {
+        Expression ex = valType switch
+        {
+            ClParamValueType.Regularity => parameter.GetRegularityEx<TEntity>(),
+
+            ClParamValueType.StudentCareer => parameter.GetValueOrValuesEx<TEntity>
+                (ClParamValueType.Career, ClParamValueType.Careers, true),
+
+            ClParamValueType.StudentPeriod => parameter.GetValueOrValuesEx<TEntity>
+                (ClParamValueType.Period, ClParamValueType.Periods),
+
+            ClParamValueType.StudentCampus => parameter.GetValueOrValuesEx<TEntity>
+                (ClParamValueType.ConvCod, nullableValue: true),
+
+            _ => null!
+        };
+
+        return ex;
+    }
+
+
+    private static Expression GetRegularityEx<TEntity>(this ClParameter parameter)
+    {
+        if (!parameter.ContainsValues) return null!;
+
+        ClParamValue? regPmValue = parameter[ClParamValueType.Regularity];
+        ClParamValue? curPmValue = parameter[ClParamValueType.Ingress];
+
+        if (curPmValue is null)
+            return regPmValue!.ToExpression<TEntity>();
+
+        string regValue = regPmValue!.GetValue<string>();
+        string regTarget = regPmValue!.StrValueSign;
+        { }
+        string curValue = curPmValue.GetValue<string>();
+        string curTarget = curPmValue.StrValueSign;
+        { }
+        Expression regCurEx = ExpressionFactory.
+            GetAndAlsoEx<TEntity, string, string>(regTarget, regValue, curTarget, curValue);
+
+        return regCurEx;
+    }
+
+    internal static Expression GetValueOrValuesEx<TEntity>(this ClParameter parameter,
+        ClParamValueType xValType, ClParamValueType? yValType = null, bool nullableValue = false)
+    {
+        if (!parameter.ContainsValues) return null!;
+
+        ClParamValue? paramValue = parameter[xValType];
+        { }
+        if (paramValue is not null)
+            return paramValue.ToExpression<TEntity>(nullableValue);
+
+        if (yValType is not { } yyValType) return null!;
+
+        paramValue = parameter[yyValType];
+
+        return paramValue?.ToExpression<TEntity>(nullableValue)!;
+    }
+
+}
+
+
+

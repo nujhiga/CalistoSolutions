@@ -6,6 +6,8 @@ public  class ClBody : IClBody
     public ClMessagePattern ClMessagePattern { get; set; }
     public bool IsValidBody { get; set; }
     public bool IsMassive { get; set; }
+    public bool IsContainer { get; set; }
+
 
     public ClBody()
     {

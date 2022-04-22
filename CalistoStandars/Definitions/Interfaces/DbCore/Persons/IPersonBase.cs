@@ -1,4 +1,5 @@
-﻿using CalistoStandards.Definitions.Interfaces.Cls;
+﻿using System.Reflection;
+using CalistoStandards.Definitions.Interfaces.Cls;
 using CalistoStandards.Definitions.Interfaces.DbCore.Users;
 
 namespace CalistoStandards.Definitions.Interfaces.DbCore.Persons;
@@ -12,4 +13,5 @@ public interface IPersonBase : IEquatable<IPersonBase>, IComparable<IPersonBase>
 
     [ElementAttr(ClElementType.Serializable)]
     ICampusUser? CampusUser { get; set; }
+
 }

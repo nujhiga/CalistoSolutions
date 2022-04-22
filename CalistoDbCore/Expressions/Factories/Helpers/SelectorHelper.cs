@@ -28,8 +28,6 @@ internal static class SelectorHelper
     internal static IEnumerable<PropertyInfo> GetResultProperties<TResult>(
         this TResult result, IEnumerable<EntityMemberSign> propertiesSignsFilter)
     {
-        //IEnumerable<string> signsStrings = propertiesSignsFilter.SelectExp(s => s.ToString());
-
         IEnumerable<PropertyInfo> properties = result.GetInterfaceProperties<EntityAttr>();
 
         foreach (string signName in propertiesSignsFilter.Select(p => $"{p}"))
