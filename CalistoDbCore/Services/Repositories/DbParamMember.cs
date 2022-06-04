@@ -1,7 +1,4 @@
-﻿using System.Reflection.Metadata;
-using CalistoStandards.Definitions.Structures.Cls;
-
-namespace CalistoDbCore.Services.Repositories;
+﻿namespace CalistoDbCore.Services.Repositories;
 
 
 

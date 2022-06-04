@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using CalistoStandards.Definitions.Factories.Cls;
 
 namespace CalistoStandards.Definitions.Interfaces.Cls;
 
@@ -7,6 +7,7 @@ public interface IClComponent
 
     object? Value { get; set; }
     Enum? ComponentType { get; set; }
+    //ClPattern? MessagePattern { get; set; }
 }
 
 public interface IClComponent<TSign> : IClSignedComponent<TSign>, IClComponent where TSign : struct, Enum

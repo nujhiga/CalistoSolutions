@@ -1,6 +1,4 @@
 ﻿using CalistoStandards.Definitions.Interfaces.Cls;
-using CalistoStandards.Definitions.Interfaces.DbCore.Persons;
-using CalistoStandards.Definitions.Interfaces.DbCore.Users;
 using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
 using CalistoStandards.Definitions.Structures.EdCore;
 

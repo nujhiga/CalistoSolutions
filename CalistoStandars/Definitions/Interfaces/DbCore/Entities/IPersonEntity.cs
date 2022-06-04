@@ -3,22 +3,9 @@
 
 
 
-public interface IPersonEntitys : IEntity
+public interface IPersonEntitys : INominalEntity
 {
-    [EntityAttr(EntityMemberSign.Legajo)]
-    double Legajo { get; set; }
-
-    [EntityAttr(EntityMemberSign.Apellido)]
-    string? Apellido { get; set; }
-
-    [EntityAttr(EntityMemberSign.Nombres)]
-    string? Nombres { get; set; }
-
-    [EntityAttr(EntityMemberSign.Documento)]
-    double? Documento { get; set; }
-
-    [EntityAttr(EntityMemberSign.FecNac)]
-    DateTime? FecNac { get; set; }
+    
 
     [EntityAttr(EntityMemberSign.Regular)]
     string? Regular { get; set; }

@@ -1,8 +1,4 @@
-﻿
-using System.Reflection.Metadata;
-using System.Windows.Markup;
-
-using CalistoDbCore.Services.Repositories;
+﻿using CalistoDbCore.Services.Repositories;
 
 using CalistoStandards.Definitions.Structures.Cls;
 

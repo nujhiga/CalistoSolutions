@@ -42,8 +42,7 @@ public static class MessagesExtensions
 
     public static object? GetSourceValue<TSign>(this object source, TSign sign) where TSign : Enum
     {
-
-        var properties = ReflectionExtensions.GetInterfaceProperties <ElementAttr>( source );
+        var properties = ReflectionExtensions.GetInterfaceProperties<ElementAttr>( source );
 
         var nameProp = properties!.Single(p => p.GetCustomAttribute<ElementAttr>()!.SignEnum.Equals(sign));
         

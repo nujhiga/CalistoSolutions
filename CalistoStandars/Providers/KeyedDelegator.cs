@@ -1,8 +1,4 @@
-﻿using System;
-
-using CalistoStandards.Definitions.Enumerations;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
 
 namespace CalistoStandards.Providers;
 
@@ -29,7 +25,7 @@ public sealed class KeyedDelegators : KeyedCollection<int, Delegate>
                 item.Method.GetHashCode());
     }
 
-    public Delegate GetByName(string methodName)
+    public Delegate? GetByName(string methodName)
     {
         if (!_mappedHashMethods.ContainsKey(methodName)) return null!;
 
@@ -129,16 +125,14 @@ public sealed class KeyedDelegator
     }
     public void Invoke(string methodName)
     {
-        Delegate deleg = _delegates.GetByName(methodName);
-        if (deleg is null) return;
-        deleg.DynamicInvoke();
+        Delegate? deleg = _delegates.GetByName(methodName);
+        deleg?.DynamicInvoke();
 
     }
     public void Invoke(string methodName, params object[] invokeParams)
     {
-        Delegate deleg = _delegates.GetByName(methodName);
-        if (deleg is null) return;
-        deleg.DynamicInvoke(invokeParams);
+        Delegate? deleg = _delegates.GetByName(methodName);
+        deleg?.DynamicInvoke(invokeParams);
 
     }
     

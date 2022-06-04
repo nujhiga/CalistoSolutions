@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
+﻿using System.Reflection;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization.Metadata;
-using System.Threading.Tasks;
 
 using CalistoStandards.Definitions.Interfaces.Cls;
-using CalistoStandards.Definitions.Interfaces.DbCore.Users;
 using CalistoStandards.Definitions.Models;
 using CalistoStandards.Definitions.Models.EdCore.Messages;
-
-using Microsoft.VisualBasic;
 
 namespace CalistoStandards.Definitions.Factories.Cls;
 public static class ClComponentFactory
@@ -153,24 +142,6 @@ public static class ClJsonExtensions
 
 public static class ClMessageStructFactory
 {
-    
-
-
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private static IClComponent GetCommonClComponent(in JsonNode node, in ClPattern pattern, bool isContainer = false)
@@ -197,6 +168,8 @@ public static class ClMessageStructFactory
         {
             component = node.GetClMemberNode().AsClComponent(isContainer);
         }
+
+       // component.MessagePattern = pattern;
 
         return component;
     }
@@ -272,21 +245,8 @@ public sealed class ClPattern : IEquatable<ClMessagePattern>
         Pattern = pattern;
     }
 
-    private bool Equals(ClPattern other)
-    {
-        return Sign == other.Sign && Pattern == other.Pattern;
-    }
-
+    private bool Equals(ClPattern other) => Sign == other.Sign && Pattern == other.Pattern;
     public bool Equals(ClMessagePattern other) => other.Equals(Pattern);
-
-
-    public override bool Equals(object? obj)
-    {
-        return ReferenceEquals(this, obj) || obj is ClPattern other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine((int)Sign, (int)Pattern);
-    }
+    public override bool Equals(object? obj) => ReferenceEquals(this, obj) || obj is ClPattern other && Equals(other);
+    public override int GetHashCode() => HashCode.Combine((int)Sign, (int)Pattern);
 }

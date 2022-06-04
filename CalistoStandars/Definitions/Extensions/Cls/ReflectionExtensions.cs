@@ -119,6 +119,7 @@ public static class ReflectionExtensions
         IEnumerable<PropertyInfo> properties =
             type.GetPropertiesWith<TAttr>();
         {}
+
         return where is null ? properties : properties.Where(where);
     }
 
@@ -148,7 +149,7 @@ public static class ReflectionExtensions
         bool isInterface = srcType.IsInterface;
         {}
         Type type = isInterface ? srcType.GetInterfaceType() : srcType;
-
+        {}
         return (type, isInterface);
     }
 }

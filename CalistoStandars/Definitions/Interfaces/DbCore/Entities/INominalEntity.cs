@@ -20,7 +20,6 @@ public interface INominalEntity : IEntity
     [EntityAttr(EntityMemberSign.Mail)]
     string? Mail { get; set; }
 
-
     [EntityAttr(EntityMemberSign.SexoId)]
     int? SexoId { get; set; }
 }

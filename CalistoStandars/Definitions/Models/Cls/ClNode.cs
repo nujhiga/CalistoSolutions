@@ -1,4 +1,6 @@
-﻿namespace CalistoStandards.Definitions.Models;
+﻿using CalistoStandards.Definitions.Factories.Cls;
+
+namespace CalistoStandards.Definitions.Models;
 
 public sealed class ClNode : IClNode
 {
@@ -25,4 +27,5 @@ public sealed class ClNode : IClNode
 
     public object? Value { get; set; }
     public Enum? ComponentType { get; set; }
+    //public ClPattern? MessagePattern { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using CalistoStandards.Definitions.Interfaces.DbCore.Entities;
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace CalistoStandards.Definitions.Models;
 public class NominalEntity : INominalEntity

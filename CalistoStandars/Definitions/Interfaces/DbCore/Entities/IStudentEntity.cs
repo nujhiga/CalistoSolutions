@@ -1,5 +1,7 @@
 ﻿namespace CalistoStandards.Definitions.Interfaces.DbCore.Entities;
-//public interface IStudentEntity : IEntity
-//{
 
-//}
+public interface IStudentEntity : IEntity
+{
+
+}
+

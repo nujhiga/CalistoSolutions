@@ -1,8 +1,4 @@
-﻿using System.Net;
-
-using CalistoDbCore.Services.Repositories;
-using CalistoStandards.Definitions;
-using CalistoStandards.Definitions.Structures.Cls;
+﻿using CalistoDbCore.Services.Repositories;
 using CalistoStandards.Providers;
 
 namespace CalistoDbCore;

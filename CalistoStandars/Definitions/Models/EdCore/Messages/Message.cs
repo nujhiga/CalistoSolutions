@@ -1,5 +1,4 @@
-﻿using CalistoStandards.Definitions.Enumerations;
-using CalistoStandards.Definitions.Interfaces.Cls;
+﻿using CalistoStandards.Definitions.Interfaces.Cls;
 using CalistoStandards.Definitions.Interfaces.EdCore.Messages;
 using CalistoStandards.Definitions.Models.EdCore.Components;
 using CalistoStandards.Definitions.Structures.Cls;
